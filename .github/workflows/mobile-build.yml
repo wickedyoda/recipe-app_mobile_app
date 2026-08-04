@@ -288,6 +288,7 @@ jobs:
     runs-on: macos-latest
     needs: [build-ios]
     if: github.event_name == 'release' && github.event.action == 'published'
+    continue-on-error: true
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -303,8 +304,8 @@ jobs:
       - name: Build iOS and publish
         run: |
           if [ -z "${{ secrets.EXPO_TOKEN }}" ]; then
-            echo "EXPO_TOKEN not set, cannot build iOS for release"
-            exit 1
+            echo "EXPO_TOKEN not set, skipping iOS publish"
+            exit 0
           fi
           if [ ! -f eas.json ]; then
             echo '{ "build": { "production": { "ios": { "simulator": false } } } }' > eas.json

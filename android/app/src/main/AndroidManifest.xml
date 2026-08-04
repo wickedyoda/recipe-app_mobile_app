@@ -8,7 +8,8 @@
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="CookieRue"
-        android:theme="@style/Theme.AppCompat.Light.NoActionBar">
+        android:theme="@style/Theme.AppCompat.Light.NoActionBar"
+        android:usesCleartextTraffic="false">
         <activity
             android:name=".MainActivity"
             android:exported="true">

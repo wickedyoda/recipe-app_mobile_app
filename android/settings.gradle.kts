@@ -6,14 +6,12 @@ pluginManagement {
     }
 }
 
-plugins {
-    id("com.android.application") version "8.5.2" apply false
-    kotlin("android") version "2.0.21" apply false
-}
-
-allprojects {
+dependencyResolutionManagement {
     repositories {
         google()
         mavenCentral()
     }
 }
+
+rootProject.name = "CookieRueMobile"
+include(":app")

@@ -23,7 +23,7 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         window.statusBarColor = android.graphics.Color.parseColor("#0f1115")
-        WindowInsetsControllerCompat(window, window.decorView).isAppearanceLightContent = false
+        WindowInsetsControllerCompat(window, window.decorView).isAppearanceLightStatusBars = false
 
         val prefs = getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
         val savedHost = prefs.getString(KEY_HOST, "").orEmpty()
@@ -66,10 +66,9 @@ class MainActivity : AppCompatActivity() {
         } else {
             "https://$host"
         }
-        val uri = Uri.parse(url)
-        if (uri.scheme == null || uri.host == null) return false
-        // Enforce HTTPS only to mitigate MITM
-        if (uri.scheme != "https") return false
+        val parsedUri = Uri.parse(url)
+        if (parsedUri.scheme == null || parsedUri.host == null) return false
+        if (parsedUri.scheme != "https") return false
         return true
     }
 
@@ -80,22 +79,20 @@ class MainActivity : AppCompatActivity() {
 
         val url = if (host.startsWith("http://") || host.startsWith("https://")) host else "https://$host"
         val ws = webView.settings
-        ws.javaScriptEnabled = true  // Required for the Recipe App SPA
+        ws.javaScriptEnabled = true
         ws.domStorageEnabled = true
         ws.loadWithOverviewMode = true
         ws.useWideViewPort = true
-        // Security hardening
         ws.allowFileAccess = false
         ws.allowFileAccessFromFileURLs = false
         ws.allowUniversalAccessFromFileURLs = false
         ws.allowContentAccess = false
 
-        // Restrict WebView to only navigate within the configured host
         webView.webViewClient = object : WebViewClient() {
             override fun shouldOverrideUrlLoading(view: WebView, request: WebResourceRequest): Boolean {
-                val requestHost = request.uri?.host
+                val requestUri = request.uri
+                val requestHost = requestUri?.host
                 val allowedHost = Uri.parse(url).host
-                // Block navigation away from the configured host
                 return requestHost != allowedHost
             }
         }

@@ -190,10 +190,10 @@ jobs:
           fi
           chmod +x gradlew
 
-      - name: Build release APK
+      - name: Build debug APK (auto-signed, installable on all devices)
         run: |
           cd android
-          ./gradlew assembleRelease --no-daemon 2>&1
+          ./gradlew assembleDebug --no-daemon 2>&1
 
       - name: Show APK outputs
         run: |
@@ -269,7 +269,7 @@ jobs:
             gradle wrapper --gradle-version 8.10.2 --distribution-type bin 2>&1 || true
           fi
           chmod +x gradlew 2>/dev/null || true
-          ./gradlew assembleRelease --no-daemon 2>&1
+          ./gradlew assembleDebug --no-daemon 2>&1
           APKS=$(find app/build/outputs/apk -name "*.apk" | head -1)
           if [ -n "$APKS" ]; then
             cp "$APKS" "../../cookierue-android-${GITHUB_REF_NAME}.apk"

@@ -2,7 +2,7 @@ name: Mobile Build & Security
 
 on:
   push:
-    branches: ["main", "master", "android-client", "ios-client"]
+    branches: ["main", "master"]
   pull_request:
     branches: ["main", "master"]
   workflow_dispatch:
@@ -36,6 +36,7 @@ jobs:
         run: |
           test -f android/app/src/main/res/layout/activity_main.xml
           test -f android/app/src/main/res/values/strings.xml
+          grep -q "WebView" android/app/src/main/res/layout/activity_main.xml
 
   security-secrets:
     name: Secrets Scan
@@ -71,8 +72,8 @@ jobs:
 
       - name: Build release APK
         run: |
-          chmod +x ./gradlew 2>/dev/null || true
-          ./gradlew assembleRelease -p android 2>&1 || echo "Build tools not available"
+          chmod +x ./gradlew
+          ./gradlew assembleRelease -p android || true
 
       - name: Upload Android artifact
         uses: actions/upload-artifact@v4
@@ -93,23 +94,13 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 20
+          cache: npm
 
       - name: Install EAS CLI
         run: npm install -g eas-cli
 
-      - name: Create eas.json if missing
-        run: |
-          if [ ! -f eas.json ]; then
-            echo '{ "build": { "development": { "distribution": "internal", "ios": { "simulator": true } }, "preview": { "ios": { "simulator": true } } } }' > eas.json
-          fi
-
       - name: Build iOS
-        run: |
-          if [ -z "${{ secrets.EXPO_TOKEN }}" ]; then
-            echo "EXPO_TOKEN not set, skipping iOS build"
-          else
-            eas build --platform ios --profile preview --non-interactive --token "${{ secrets.EXPO_TOKEN }}" || true
-          fi
+        run: eas build --platform ios --non-interactive --token "${{ secrets.EXPO_TOKEN }}" || true
 
       - name: Upload iOS artifact
         uses: actions/upload-artifact@v4

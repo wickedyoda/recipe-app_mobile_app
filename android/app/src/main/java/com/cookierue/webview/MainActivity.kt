@@ -90,7 +90,7 @@ class MainActivity : AppCompatActivity() {
 
         webView.webViewClient = object : WebViewClient() {
             override fun shouldOverrideUrlLoading(view: WebView, request: WebResourceRequest): Boolean {
-                val requestUri = request.uri
+                val requestUri = request.url
                 val requestHost = requestUri?.host
                 val allowedHost = Uri.parse(url).host
                 return requestHost != allowedHost

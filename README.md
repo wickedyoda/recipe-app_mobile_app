@@ -1,6 +1,14 @@
-# WiskfFul Mobile App
+<div align="center">
+  <img src="https://github.com/wickedyoda/recipe-app/raw/main/frontend/src/icons/logo-lg.png" alt="WiskfFul logo" width="120" height="120" />
+</div>
+
+<div align="center">
+
+## WiskfFul
 
 > **Plan it. Cook it. Love it.**
+
+</div>
 
 ## Overview
 
@@ -63,7 +71,7 @@ recipe-app_mobile_app/
 │   └── build.gradle
 ├── ios/
 │   ├── WiskfFul/           # iOS client (paused — will resume in future)
-│   │   ├── CookieRueApp.swift
+│   │   ├── WiskfFulApp.swift
 │   │   ├── ContentView.swift
 │   │   └── RecipeAppWebView.swift
 │   └── README.md

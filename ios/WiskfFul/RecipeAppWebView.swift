@@ -1,5 +1,5 @@
 /*
- * CookieRue iOS client
+ * WiskfFul iOS client
  * SwiftUI + WKWebView wrapper for the Recipe App web interface
  */
 

@@ -1,7 +1,7 @@
 import SwiftUI
 
 @main
-struct CookieRueApp: App {
+struct WiskfFulApp: App {
     var body: some Scene {
         WindowGroup {
             ContentView()

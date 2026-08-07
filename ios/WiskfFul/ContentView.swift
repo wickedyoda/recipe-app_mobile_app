@@ -13,7 +13,7 @@ struct ContentView: View {
                         .edgesIgnoringSafeArea(.all)
                 } else {
                     VStack(spacing: 20) {
-                        Text("CookieRue")
+                        Text("WiskfFul")
                             .font(.largeTitle)
                             .fontWeight(.bold)
                             .foregroundColor(.white)
@@ -28,7 +28,7 @@ struct ContentView: View {
                         }
                     }
                     .padding()
-                    .navigationTitle("CookieRue")
+                    .navigationTitle("WiskfFul")
                 }
             }
         }
@@ -82,7 +82,7 @@ struct HostPromptView: View {
                 .cornerRadius(12)
             }
             .padding()
-            .navigationTitle("CookieRue")
+            .navigationTitle("WiskfFul")
             .navigationBarTitleDisplayMode(.inline)
         }
     }

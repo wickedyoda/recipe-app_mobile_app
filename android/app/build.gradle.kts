@@ -6,10 +6,10 @@ plugins {
 android {
     compileSdk = 35
 
-    namespace = "com.cookierue.webview"
+    namespace = "com.wiskfful.webview"
 
     defaultConfig {
-        applicationId = "com.cookierue.webview"
+        applicationId = "com.wiskfful.webview"
         minSdk = 21
         targetSdk = 35
         versionCode = 1

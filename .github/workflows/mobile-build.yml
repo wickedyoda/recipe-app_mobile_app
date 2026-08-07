@@ -335,7 +335,7 @@ jobs:
       - name: Upload APK as release asset
         uses: softprops/action-gh-release@v2
         with:
-          files: ./cookierue-android-*.apk
+          files: ./wiskfful-android-*.apk
 
   publish-ios-package:
     name: Publish iOS to GHCR

@@ -1,13 +1,13 @@
-# CookieRue iOS Client
+# WiskfFul iOS Client
 
-SwiftUI + WKWebView wrapper for the CookieRue recipe app web interface.
+SwiftUI + WKWebView wrapper for the WiskfFul recipe app web interface.
 
 ## Structure
 
 ```
 ios/
-  CookieRue/
-    CookieRueApp.swift       # App entry point (@main)
+  WiskfFul/
+    WiskfFulApp.swift       # App entry point (@main)
     ContentView.swift        # Host entry UI + connection state
     RecipeAppWebView.swift   # WKWebView UIViewRepresentable
 ```
@@ -17,7 +17,7 @@ ios/
 ### Local (macOS + Xcode 15+)
 
 ```bash
-open ios/CookieRue.xcodeproj
+open ios/WiskfFul.xcodeproj
 ```
 
 ### Cloud Build (CI)
@@ -29,7 +29,7 @@ eas build --platform ios --token $EXPO_TOKEN
 ```
 
 On first launch:
-1. Enter your CookieRue server URL
+1. Enter your WiskfFul server URL
 2. Tap **Connect** — URL is saved to `AppStorage`
 3. Web app loads inside `WKWebView`
 

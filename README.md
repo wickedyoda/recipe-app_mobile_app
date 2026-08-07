@@ -1,45 +1,51 @@
-# CookieRue Mobile App
+# WiskfFul Mobile App
+
+> **Plan it. Cook it. Love it.**
 
 ## Overview
 
-Android and iOS clients that wrap the CookieRue recipe app in a native WebView/SwiftUI shell. Enter a server URL on first launch — it's saved locally — and the app loads the web interface as a native experience.
+Android (primary) and iOS clients that wrap the WiskfFul recipe app in a native WebView/SwiftUI shell. Enter a server URL on first launch — it's saved locally — and the app loads the web interface as a native experience.
 
 ## Features
 
-- **Cross-platform**: Android (Kotlin + WebView) and iOS (SwiftUI + WKWebView)
+- **Mobile-first**: Android (primary), iOS (secondary) clients
 - **Dark theme** matching the web UI (`#0f1115` background, `#f3f3f3` text)
 - **Host persistence** — server URL saved locally after first entry
 - **Security hardened**:
-  - HTTPS-only via `network-security-config.xml` (Android) and `allowsCellularAccess`/`allowsArbitraryLoads` (iOS)
+  - HTTPS-only via `network-security-config.xml` (Android)
   - `usesCleartextTraffic="false"` — all cleartext HTTP blocked
   - `allowFileAccess = false`, `allowContentAccess = false` — file/content access blocked
   - `shouldOverrideUrlLoading` — cross-host navigation restricted
-  - WebView debugging disabled (`setWebChromeClient` without `setAllowFileAccessFromFileURLs`)
-- **Build & publish**: GitHub Packages export on release (APK to GHCR, IPA via EAS)
+  - WebView debugging disabled
+- **Build & publish**: APK auto-built and uploaded on every push to `main` (90-day retention)
 
 ## Quick Start
 
 ### Using the app
 
-1. On first open, enter your CookieRue server URL (e.g. `https://192.168.1.100:3000`)
+1. On first open, enter your WiskfFul server URL (e.g. `https://192.168.1.100:3000`)
 2. Tap **Connect** — the URL is saved locally
 3. The web app loads. On subsequent opens, it loads directly.
 
 ### Android (Kotlin + WebView)
 
 ```bash
-cd android && ./gradlew assembleRelease
+cd android && ./gradlew assembleDebug
 ```
 
-### iOS (SwiftUI + WKWebView)
+Debug APK is **auto-built on every push** to `main` via GitHub Actions and attached to a prerelease GitHub Release tagged `apk-{commit-sha}`. Download from: https://github.com/wickedyoda/recipe-app_mobile_app/releases
 
-Requires macOS + Xcode 15+:
+### iOS (SwiftUI + WKWebView) — paused
+
+iOS development is **temporarily paused**. Android will be the primary mobile client first. The iOS code in `ios/WiskfFul/` is preserved and will be resumed in a future update.
+
+To build iOS later (requires macOS + Xcode 15+):
 
 ```bash
-open ios/CookieRue.xcodeproj
+open ios/WiskfFul.xcodeproj
 ```
 
-Or build via EAS (requires Expo / Apple credentials):
+Or via EAS (requires Expo / Apple credentials):
 
 ```bash
 eas build --platform ios --token $EXPO_TOKEN
@@ -51,12 +57,12 @@ eas build --platform ios --token $EXPO_TOKEN
 recipe-app_mobile_app/
 ├── android/
 │   ├── app/
-│   │   ├── src/main/java/com/cookierue/webview/MainActivity.kt
+│   │   ├── src/main/java/com/wiskfful/webview/MainActivity.kt
 │   │   ├── src/main/AndroidManifest.xml
 │   │   └── src/main/res/xml/network_security_config.xml
 │   └── build.gradle
 ├── ios/
-│   ├── CookieRue/
+│   ├── WiskfFul/           # iOS client (paused — will resume in future)
 │   │   ├── CookieRueApp.swift
 │   │   ├── ContentView.swift
 │   │   └── RecipeAppWebView.swift
@@ -83,16 +89,7 @@ Runs on every push, PR, and release via [GitHub Actions](.github/workflows/mobil
 
 ## GitHub Packages Export
 
-On release, both clients are published to GitHub Packages:
-
-- **Android APK** → uploaded as release asset + 30-day artifact retention
-- **iOS IPA** → uploaded as release asset + 30-day artifact retention (requires `EXPO_TOKEN` secret)
-
-Trigger a release:
-
-```bash
-gh release create v1.0.0 --title "v1.0.0" --notes "First mobile release" --repo wickedyoda/recipe-app_mobile_app
-```
+- **Android APK** → auto-built on every push to `main`, uploaded as a prerelease GitHub Release (90-day retention)
 
 ## License
 

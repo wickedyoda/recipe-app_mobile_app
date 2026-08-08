@@ -1,4 +1,4 @@
-name: Mobile Verify & Security
+name: Mobile Verify, Security, & Build
 
 on:
   push:

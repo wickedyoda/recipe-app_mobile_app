@@ -254,7 +254,7 @@ jobs:
       - name: Install Android SDK
         uses: android-actions/setup-android@v3
 
-      - name: Build debug APK (auto-signed, installable on all devices)
+      - name: Generate and run Gradle wrapper
         run: |
           cd android
           if [ ! -f gradlew ]; then
@@ -264,7 +264,7 @@ jobs:
           ./gradlew assembleDebug --no-daemon 2>&1
           APKS=$(find app/build/outputs/apk -name "*-debug.apk" | head -1)
           if [ -n "$APKS" ]; then
-            cp "$APKS" "../../wiskfful-android-${GITHUB_SHA}.apk"
+            cp "$APKS" "../../wiskfful-android.apk"
           else
             echo "No APK found"
             exit 1
@@ -274,14 +274,14 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: wiskfful-android-${{ github.sha }}
-          path: ./wiskfful-android-*.apk
+          path: ./wiskfful-android.apk
           if-no-files-found: error
           retention-days: 90
 
       - name: Create or update release with APK
         uses: softprops/action-gh-release@v2
         with:
-          files: ./wiskfful-android-*.apk
+          files: ./wiskfful-android.apk
           tag_name: "apk-${{ github.sha }}"
           name: "APK Build ${{ github.sha }}"
           generate_release_notes: false
@@ -318,7 +318,7 @@ jobs:
           ./gradlew assembleDebug --no-daemon 2>&1
           APKS=$(find app/build/outputs/apk -name "*.apk" | head -1)
           if [ -n "$APKS" ]; then
-            cp "$APKS" "../../wiskfful-android-${GITHUB_REF_NAME}.apk"
+            cp "$APKS" "../../wiskfful-android.apk"
           else
             echo "No APK found"
             exit 1
@@ -328,14 +328,14 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: wiskfful-android-${{ github.ref_name }}
-          path: ./wiskfful-android-*.apk
+          path: ./wiskfful-android.apk
           if-no-files-found: error
           retention-days: 30
 
       - name: Upload APK as release asset
         uses: softprops/action-gh-release@v2
         with:
-          files: ./wiskfful-android-*.apk
+          files: ./wiskfful-android.apk
 
   publish-ios-package:
     name: Publish iOS to GHCR

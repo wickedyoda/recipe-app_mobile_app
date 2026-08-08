@@ -36,6 +36,11 @@ jobs:
         uses: android-actions/setup-android@v3
 
       - name: Generate Gradle wrapper and build
+        env:
+          APK_SIGNING_KEY: ${{ secrets.APK_SIGNING_KEY }}
+          APK_KEYSTORE_PASSWORD: ${{ secrets.APK_KEYSTORE_PASSWORD }}
+          APK_KEY_ALIAS: ${{ secrets.APK_KEY_ALIAS }}
+          APK_KEY_PASSWORD: ${{ secrets.APK_KEY_PASSWORD }}
         run: |
           cd android
           if [ ! -f gradlew ]; then
@@ -44,9 +49,20 @@ jobs:
           chmod +x gradlew 2>/dev/null || true
           BUILD_TYPE=${{ inputs.build_type || 'debug' }}
           if [ "$BUILD_TYPE" = "release" ]; then
-            ./gradlew assembleRelease --no-daemon 2>&1 || echo "Release build tools not available"
+            # Decode the release keystore (base64 secret) when signing is configured.
+            if [ -n "$APK_SIGNING_KEY" ]; then
+              printf '%s' "$APK_SIGNING_KEY" | base64 -d > "${RUNNER_TEMP}/whiskful-release.keystore"
+              export SIGNING_STORE_FILE="${RUNNER_TEMP}/whiskful-release.keystore"
+              export SIGNING_STORE_PASSWORD="$APK_KEYSTORE_PASSWORD"
+              export SIGNING_KEY_ALIAS="$APK_KEY_ALIAS"
+              export SIGNING_KEY_PASSWORD="$APK_KEY_PASSWORD"
+              echo "Release signing enabled (keystore loaded from secret)."
+            else
+              echo "WARNING: APK_SIGNING_KEY secret not set; building unsigned release APK."
+            fi
+            ./gradlew :app:assembleRelease --no-daemon 2>&1
           else
-            ./gradlew assembleDebug --no-daemon 2>&1 || echo "Build tools not available"
+            ./gradlew :app:assembleDebug --no-daemon 2>&1 || echo "Build tools not available"
           fi
 
       - name: Upload Android artifact

@@ -34,7 +34,7 @@
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Please enter your website name below"
+        android:text="Please enter your server URL below"
         android:textSize="14sp"
         android:textColor="#f3f3f3"
         android:fontFamily="sans-serif"

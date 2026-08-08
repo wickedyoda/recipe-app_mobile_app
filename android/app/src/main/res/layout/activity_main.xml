@@ -7,6 +7,12 @@
     android:gravity="center"
     android:padding="24dp">
 
+    <ImageView
+        android:layout_width="120dp"
+        android:layout_height="120dp"
+        android:src="@mipmap/ic_launcher"
+        android:layout_marginBottom="16dp" />
+
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -14,7 +20,27 @@
         android:textSize="28sp"
         android:textColor="#f3f3f3"
         android:fontFamily="sans-serif"
+        android:layout_marginBottom="8dp" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Plan it. Cook it. Love it."
+        android:textSize="14sp"
+        android:textColor="#888899"
+        android:fontFamily="sans-serif"
         android:layout_marginBottom="32dp" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Please enter your website name below"
+        android:textSize="14sp"
+        android:textColor="#f3f3f3"
+        android:fontFamily="sans-serif"
+        android:background="#1e2026"
+        android:padding="16dp"
+        android:layout_marginBottom="16dp" />
 
     <EditText
         android:id="@+id/urlInput"
@@ -27,16 +53,30 @@
         android:padding="14dp"
         android:textSize="16sp"
         android:inputType="textUri"
-        android:imeOptions="actionGo" />
+        android:imeOptions="actionGo"
+        android:layout_marginBottom="16dp" />
 
     <Button
         android:id="@+id/connectBtn"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Connect"
+        android:text="Save"
         android:textColor="#f3f3f3"
         android:textSize="16sp"
         android:backgroundTint="#111111"
-        android:layout_marginTop="16dp" />
+        android:layout_marginBottom="16dp" />
+
+    <Space
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="(C) wickedyoda.com"
+        android:textSize="12sp"
+        android:textColor="#555566"
+        android:fontFamily="sans-serif" />
 
 </LinearLayout>

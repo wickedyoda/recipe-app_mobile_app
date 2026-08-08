@@ -121,11 +121,12 @@ jobs:
           fi
           chmod +x gradlew 2>/dev/null || true
           ./gradlew assembleDebug --no-daemon 2>&1
-          APKS=$(find app/build/outputs/apk -name "*-debug.apk" | head -1)
+          APKS=$(find app/build/outputs/apk -name "*-debug.apk" -type f | head -1)
           if [ -n "$APKS" ]; then
-            cp "$APKS" "../../wiskfful-android.apk"
+            cp "$APKS" "../wiskfful-android.apk"
           else
-            echo "No APK found"
+            echo "No APK found at $(pwd)/app/build/outputs/apk/"
+            ls -la app/build/outputs/apk/ 2>/dev/null || echo "APK directory does not exist"
             exit 1
           fi
 
@@ -175,11 +176,12 @@ jobs:
           fi
           chmod +x gradlew 2>/dev/null || true
           ./gradlew assembleDebug --no-daemon 2>&1
-          APKS=$(find app/build/outputs/apk -name "*.apk" | head -1)
+          APKS=$(find app/build/outputs/apk -name "*.apk" -type f | head -1)
           if [ -n "$APKS" ]; then
-            cp "$APKS" "../../wiskfful-android.apk"
+            cp "$APKS" "../wiskfful-android.apk"
           else
-            echo "No APK found"
+            echo "No APK found at $(pwd)/app/build/outputs/apk/"
+            ls -la app/build/outputs/apk/ 2>/dev/null || echo "APK directory does not exist"
             exit 1
           fi
 

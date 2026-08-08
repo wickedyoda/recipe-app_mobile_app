@@ -81,7 +81,7 @@ jobs:
           cd android
           APK_FILE=$(find app/build/outputs/apk -name "*.apk" -type f | head -1)
           if [ -n "$APK_FILE" ]; then
-            cp "$APK_FILE" "../wiskfful-android.apk"
+            cp "$APK_FILE" "../whiskful-android.apk"
             echo "APK: $APK_FILE"
           else
             echo "No APK found"
@@ -119,17 +119,17 @@ jobs:
       - name: Upload APK artifact
         uses: actions/upload-artifact@v4
         with:
-          name: wiskfful-apk-v1.0.${{ inputs.sub_version }}
-          path: ./wiskfful-android.apk
+          name: whiskful-apk-v1.0.${{ inputs.sub_version }}
+          path: ./whiskful-android.apk
           if-no-files-found: error
           retention-days: 30
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
-          files: ./wiskfful-android.apk
+          files: ./whiskful-android.apk
           tag_name: "v1.0.${{ inputs.sub_version }}"
-          name: "WiskfFul APK v1.0.${{ inputs.sub_version }}"
+          name: "WhiskFul APK v1.0.${{ inputs.sub_version }}"
           body_path: release_notes.md
           generate_release_notes: false
         env:

@@ -56,15 +56,15 @@ jobs:
 
       - name: Validate iOS files
         run: |
-          test -f ios/WiskfFul/WiskfFulApp.swift
-          test -f ios/WiskfFul/ContentView.swift
-          test -f ios/WiskfFul/RecipeAppWebView.swift
+          test -f ios/WhiskFul/WhiskFulApp.swift
+          test -f ios/WhiskFul/ContentView.swift
+          test -f ios/WhiskFul/RecipeAppWebView.swift
 
       - name: Validate Android WebView security
         run: |
-          grep -q "allowFileAccess.*false\|allowFileAccess = false" android/app/src/main/java/com/wiskfful/webview/MainActivity.kt
-          grep -q "allowContentAccess.*false\|allowContentAccess = false" android/app/src/main/java/com/wiskfful/webview/MainActivity.kt
-          grep -q "shouldOverrideUrlLoading" android/app/src/main/java/com/wiskfful/webview/MainActivity.kt
+          grep -q "allowFileAccess.*false\|allowFileAccess = false" android/app/src/main/java/com/whiskful/webview/MainActivity.kt
+          grep -q "allowContentAccess.*false\|allowContentAccess = false" android/app/src/main/java/com/whiskful/webview/MainActivity.kt
+          grep -q "shouldOverrideUrlLoading" android/app/src/main/java/com/whiskful/webview/MainActivity.kt
 
   yaml-validate:
     name: YAML & Config Validate

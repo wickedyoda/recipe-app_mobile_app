@@ -1,5 +1,5 @@
 <div align="center">
-  <img src="https://github.com/wickedyoda/recipe-app/raw/main/frontend/src/icons/logo-lg.png" alt="WiskfFul logo" width="120" height="120" />
+  <img src="https://github.com/wickedyoda/recipe-app/raw/master/frontend/src/icons/logo-lg.png" alt="WiskfFul logo" width="120" height="120" />
 </div>
 
 <div align="center">

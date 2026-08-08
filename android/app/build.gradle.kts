@@ -1,3 +1,5 @@
+import java.io.File
+
 plugins {
     id("com.android.application")
     kotlin("android")
@@ -23,6 +25,29 @@ android {
 
     kotlinOptions {
         jvmTarget = "1.8"
+    }
+
+    // Release signing is injected at build time from CI-provided env vars
+    // (decoded from the APK_SIGNING_KEY GitHub secret). Debug builds are unaffected.
+    signingConfigs {
+        create("release") {
+            storeFile = System.getenv("SIGNING_STORE_FILE")?.let { File(it) }
+            storePassword = System.getenv("SIGNING_STORE_PASSWORD")
+            keyAlias = System.getenv("SIGNING_KEY_ALIAS")
+            keyPassword = System.getenv("SIGNING_KEY_PASSWORD")
+        }
+    }
+
+    buildTypes {
+        release {
+            // Sign only when the keystore env vars are present; otherwise AGP
+            // produces an unsigned release APK (no failure) so other workflows keep working.
+            if (System.getenv("SIGNING_STORE_FILE") != null) {
+                signingConfig = signingConfigs.getByName("release")
+            }
+            isMinifyEnabled = false
+            isDebuggable = false
+        }
     }
 }
 

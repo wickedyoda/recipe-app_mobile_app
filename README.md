@@ -1,10 +1,10 @@
 <div align="center">
-  <img src="https://github.com/wickedyoda/recipe-app/raw/master/frontend/src/icons/logo-lg.png" alt="WiskfFul logo" width="120" height="120" />
+  <img src="https://github.com/wickedyoda/recipe-app/raw/master/frontend/src/icons/logo-lg.png" alt="WhiskFul logo" width="120" height="120" />
 </div>
 
 <div align="center">
 
-## WiskfFul
+## WhiskFul
 
 > **Plan it. Cook it. Love it.**
 
@@ -12,7 +12,7 @@
 
 ## Overview
 
-Android (primary) and iOS clients that wrap the WiskfFul recipe app in a native WebView/SwiftUI shell. Enter a server URL on first launch — it's saved locally — and the app loads the web interface as a native experience.
+Android (primary) and iOS clients that wrap the WhiskFul recipe app in a native WebView/SwiftUI shell. Enter a server URL on first launch — it's saved locally — and the app loads the web interface as a native experience.
 
 ## Features
 
@@ -31,7 +31,7 @@ Android (primary) and iOS clients that wrap the WiskfFul recipe app in a native 
 
 ### Using the app
 
-1. On first open, enter your WiskfFul server URL (e.g. `https://192.168.1.100:3000`)
+1. On first open, enter your WhiskFul server URL (e.g. `https://192.168.1.100:3000`)
 2. Tap **Connect** — the URL is saved locally
 3. The web app loads. On subsequent opens, it loads directly.
 
@@ -45,12 +45,12 @@ Debug APK is **auto-built on every push** to `main` via GitHub Actions and attac
 
 ### iOS (SwiftUI + WKWebView) — paused
 
-iOS development is **temporarily paused**. Android will be the primary mobile client first. The iOS code in `ios/WiskfFul/` is preserved and will be resumed in a future update.
+iOS development is **temporarily paused**. Android will be the primary mobile client first. The iOS code in `ios/WhiskFul/` is preserved and will be resumed in a future update.
 
 To build iOS later (requires macOS + Xcode 15+):
 
 ```bash
-open ios/WiskfFul.xcodeproj
+open ios/WhiskFul.xcodeproj
 ```
 
 Or via EAS (requires Expo / Apple credentials):
@@ -65,13 +65,13 @@ eas build --platform ios --token $EXPO_TOKEN
 recipe-app_mobile_app/
 ├── android/
 │   ├── app/
-│   │   ├── src/main/java/com/wiskfful/webview/MainActivity.kt
+│   │   ├── src/main/java/com/whiskful/webview/MainActivity.kt
 │   │   ├── src/main/AndroidManifest.xml
 │   │   └── src/main/res/xml/network_security_config.xml
 │   └── build.gradle
 ├── ios/
-│   ├── WiskfFul/           # iOS client (paused — will resume in future)
-│   │   ├── WiskfFulApp.swift
+│   ├── WhiskFul/           # iOS client (paused — will resume in future)
+│   │   ├── WhiskFulApp.swift
 │   │   ├── ContentView.swift
 │   │   └── RecipeAppWebView.swift
 │   └── README.md

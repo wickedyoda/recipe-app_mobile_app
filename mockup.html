@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+body {
+  margin: 0;
+  padding: 0;
+  background: #D2B48C;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  font-family: sans-serif;
+}
+.screen {
+  width: 390px;
+  height: 780px;
+  background: #D2B48C;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 60px 20px 80px;
+  box-sizing: border-box;
+}
+.logo {
+  width: 120px;
+  height: 120px;
+  background-image: url('/root/.hermes/profiles/wickedyoda/cache/images/img_fe56387fb24c.png');
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+  margin-bottom: 16px;
+}
+.app-name {
+  color: #141519;
+  font-size: 28px;
+  font-weight: bold;
+  margin-bottom: 8px;
+}
+.motto {
+  color: #888899;
+  font-size: 14px;
+  margin-bottom: 32px;
+}
+.instructions {
+  background: #1e2026;
+  color: #f3f3f3;
+  padding: 16px;
+  border-radius: 8px;
+  font-size: 14px;
+  text-align: center;
+  margin-bottom: 16px;
+  width: 100%;
+  box-sizing: border-box;
+}
+.url-input {
+  width: 100%;
+  height: 48px;
+  background: #0f1115;
+  border: 1px solid #2a2d35;
+  border-radius: 8px;
+  padding: 14px;
+  color: #f3f3f3;
+  font-size: 16px;
+  box-sizing: border-box;
+  margin-bottom: 16px;
+}
+.save-btn {
+  width: 100%;
+  height: 48px;
+  background: #111111;
+  color: #f3f3f3;
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  cursor: pointer;
+  margin-bottom: 16px;
+}
+.copyright {
+  color: #555566;
+  font-size: 12px;
+  margin-top: auto;
+}
+</style>
+</head>
+<body>
+<div class="screen">
+  <div class="logo"></div>
+  <div class="app-name">WiskfFul</div>
+  <div class="motto">Plan it. Cook it. Love it.</div>
+  <div class="instructions">Please enter your website name below</div>
+  <input type="text" class="url-input" placeholder="Enter server URL (e.g. 192.168.1.100:3000)" />
+  <button class="save-btn">Save</button>
+  <div class="copyright">(C) wickedyoda.com</div>
+</div>
+</body>
+</html>

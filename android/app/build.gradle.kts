@@ -6,10 +6,10 @@ plugins {
 android {
     compileSdk = 35
 
-    namespace = "com.wiskfful.webview"
+    namespace = "com.whiskful.webview"
 
     defaultConfig {
-        applicationId = "com.wiskfful.webview"
+        applicationId = "com.whiskful.webview"
         minSdk = 21
         targetSdk = 35
         versionCode = 1

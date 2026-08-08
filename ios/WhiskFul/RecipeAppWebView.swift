@@ -1,5 +1,5 @@
 /*
- * WiskfFul iOS client
+ * WhiskFul iOS client
  * SwiftUI + WKWebView wrapper for the Recipe App web interface
  */
 

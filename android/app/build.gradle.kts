@@ -33,6 +33,7 @@ android {
         create("release") {
             storeFile = System.getenv("SIGNING_STORE_FILE")?.let { File(it) }
             storePassword = System.getenv("SIGNING_STORE_PASSWORD")
+            storeType = "pkcs12"
             keyAlias = System.getenv("SIGNING_KEY_ALIAS")
             keyPassword = System.getenv("SIGNING_KEY_PASSWORD")
         }

@@ -75,14 +75,14 @@ recipe-app_mobile_app/
 │   │   ├── ContentView.swift
 │   │   └── RecipeAppWebView.swift
 │   └── README.md
-├── .github/workflows/mobile-build.yml
+
 ├── LICENSE
 └── README.md
 ```
 
 ## Security Checks
 
-Runs on every push, PR, and release via [GitHub Actions](.github/workflows/mobile-build.yml):
+
 
 | Check | Tool | Scope | Continue-on-error |
 |-------|------|-------|-------------------|

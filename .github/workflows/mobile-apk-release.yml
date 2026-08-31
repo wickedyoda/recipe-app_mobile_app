@@ -1,16 +1,13 @@
 name: Mobile APK Build & Release
 
 on:
+  push:
+    branches: [ "main", "master" ]
   workflow_dispatch:
     inputs:
-      sub_version:
-        description: "Subversion increment (e.g. 1 for 1.0.1)"
-        required: true
-        type: string
-        default: "1"
       build_type:
         description: "Build type"
-        required: false
+        required: true
         default: "release"
         type: choice
         options:
@@ -31,6 +28,24 @@ jobs:
         with:
           fetch-depth: 0
 
+      - name: Compute next alpha patch version
+        id: version
+        run: |
+          set -e
+          latest="$(
+            gh release list --repo '${{ github.repository }}' --limit 1 --json tagName --jq '.[0].tagName // empty' 2>/dev/null || true
+          )"
+          if [[ "$latest" =~ ^alpha-1\.0\.([0-9]+)$ ]]; then
+            next=$(( (${BASH_REMATCH[1]} + 1) ))
+          else
+            next=1
+          fi
+          ver="alpha-1.0.$(printf '%02d' "$next")"
+          echo "version=$ver" >> "$GITHUB_OUTPUT"
+          echo "tag=v$ver" >> "$GITHUB_OUTPUT"
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
       - name: Set up JDK 17
         uses: actions/setup-java@v5
         with:
@@ -41,19 +56,10 @@ jobs:
         uses: android-actions/setup-android@v3
 
       - name: Set version name
-        id: version
-        run: |
-          SUB_VERSION=${{ inputs.sub_version }}
-          VERSION_NAME="1.0.${SUB_VERSION}"
-          echo "version_name=${VERSION_NAME}" >> $GITHUB_OUTPUT
-          echo "Version: ${VERSION_NAME}"
-
-      - name: Update versionCode and versionName
         run: |
           cd android
           sed -i 's/versionCode = [0-9]*/versionCode = 1/' app/build.gradle.kts
-          sed -i "s/versionName = \"1.0\"/versionName = \"1.0.${{ inputs.sub_version }}\"/" app/build.gradle.kts
-          sed -i "s/versionName = \"1.0.[0-9]*\"/versionName = \"1.0.${{ inputs.sub_version }}\"/" app/build.gradle.kts
+          sed -i "s/versionName = \".*\"/versionName = \"${{ steps.version.outputs.version }}\"/" app/build.gradle.kts
           echo "--- Updated build.gradle.kts ---"
           grep -A2 "versionCode\|versionName" app/build.gradle.kts
 
@@ -68,7 +74,7 @@ jobs:
       - name: Build APK
         run: |
           cd android
-          BUILD_TYPE=${{ inputs.build_type || 'release' }}
+          BUILD_TYPE=${{ github.event.inputs.build_type == 'debug' && 'debug' || 'release' }}
           if [ "$BUILD_TYPE" = "release" ]; then
             ./gradlew :app:assembleRelease --no-daemon 2>&1
           else
@@ -80,57 +86,53 @@ jobs:
         run: |
           cd android
           APK_FILE=$(find app/build/outputs/apk -name "*.apk" -type f | head -1)
-          if [ -n "$APK_FILE" ]; then
+          if [[ -n "$APK_FILE" ]]; then
             cp "$APK_FILE" "../whiskful-android.apk"
+            echo "path=../whiskful-android.apk" >> "$GITHUB_OUTPUT"
             echo "APK: $APK_FILE"
           else
             echo "No APK found"
-            ls -la app/build/outputs/apk/ 2>/dev/null
+            ls -la app/build/outputs/apk/ 2>/dev/null || echo "APK directory does not exist"
             exit 1
           fi
 
       - name: Generate release notes from commits
         id: release_notes
         run: |
-          # Get commits since last release (or all commits if no previous release)
-          LAST_TAG=$(git describe --tags --match "v1.0.*" 2>/dev/null | tail -1)
-          if [ -n "$LAST_TAG" ]; then
+          LAST_TAG=$(git describe --tags --match "alpha-1.0.*" 2>/dev/null | tail -1)
+          if [[ -n "$LAST_TAG" ]]; then
             echo "Previous tag: $LAST_TAG"
-            NOTES=$(git log --oneline "$LAST_TAG"..HEAD -- pretty=format:"- %s (%h)")
+            NOTES=$(git log --oneline "$LAST_TAG"..HEAD --pretty=format:"- %s (%h)")
           else
-            echo "No previous release tag found"
-            NOTES=$(git log --oneline HEAD --since="2026-08-01" -- pretty=format:"- %s (%h)")
+            echo "No previous alpha release tag found"
+            NOTES=$(git log --oneline HEAD --since="2026-08-01" --pretty=format:"- %s (%h)")
           fi
-          if [ -z "$NOTES" ]; then
-            NOTES="New APK build for version ${{ steps.version.outputs.version_name }}"
+          if [[ -z "$NOTES" ]]; then
+            NOTES="New APK build for version ${{ steps.version.outputs.version }}"
           fi
           echo "$NOTES" > release_notes.md
           echo "Release notes:"
           cat release_notes.md
-          echo "release_notes<<EOF" >> $GITHUB_OUTPUT
-          cat release_notes.md >> $GITHUB_OUTPUT
-          echo "EOF" >> $GITHUB_OUTPUT
-
-      - name: Set release tag
-        id: tag
-        run: |
-          echo "tag=v1.0.${{ inputs.sub_version }}" >> $GITHUB_OUTPUT
-
-      - name: Upload APK artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: whiskful-apk-v1.0.${{ inputs.sub_version }}
-          path: ./whiskful-android.apk
-          if-no-files-found: error
-          retention-days: 30
+          echo "release_notes<<EOF" >> "$GITHUB_OUTPUT"
+          cat release_notes.md >> "$GITHUB_OUTPUT"
+          echo "EOF" >> "$GITHUB_OUTPUT"
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
           files: ./whiskful-android.apk
-          tag_name: "v1.0.${{ inputs.sub_version }}"
-          name: "WhiskFul APK v1.0.${{ inputs.sub_version }}"
+          tag_name: ${{ steps.version.outputs.tag }}
+          name: WhiskFul APK ${{ steps.version.outputs.version }}
           body_path: release_notes.md
           generate_release_notes: false
+          prerelease: true
+          make_latest: true
         env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Upload APK artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: whiskful-apk-${{ steps.version.outputs.version }}
+          path: ./whiskful-android.apk
+          retention-days: 90

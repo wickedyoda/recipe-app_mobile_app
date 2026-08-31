@@ -8,9 +8,10 @@ on:
       build_type:
         description: "Build type"
         required: true
-        default: "release"
+        default: "all"
         type: choice
         options:
+          - all
           - debug
           - release
 
@@ -20,7 +21,7 @@ permissions:
 
 jobs:
   build-and-release:
-    name: Build & Release APK
+    name: Build & Release APKs
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
@@ -71,28 +72,37 @@ jobs:
           fi
           chmod +x gradlew 2>/dev/null || true
 
-      - name: Build APK
+      - name: Build debug and release APKs
         run: |
           cd android
-          BUILD_TYPE=${{ github.event.inputs.build_type == 'debug' && 'debug' || 'release' }}
-          if [ "$BUILD_TYPE" = "release" ]; then
-            ./gradlew :app:assembleRelease --no-daemon 2>&1
-          else
+          BUILD_TYPE="${{ github.event.inputs.build_type == 'all' && 'all' || github.event.inputs.build_type }}"
+          if [[ "$BUILD_TYPE" == "all" || "$BUILD_TYPE" == "debug" ]]; then
             ./gradlew :app:assembleDebug --no-daemon 2>&1
           fi
+          if [[ "$BUILD_TYPE" == "all" || "$BUILD_TYPE" == "release" ]]; then
+            ./gradlew :app:assembleRelease --no-daemon 2>&1
+          fi
 
-      - name: Find and copy APK
+      - name: Find and copy APKs
         id: apk
         run: |
           cd android
-          APK_FILE=$(find app/build/outputs/apk -name "*.apk" -type f | head -1)
-          if [[ -n "$APK_FILE" ]]; then
-            cp "$APK_FILE" "../whiskful-android.apk"
-            echo "path=../whiskful-android.apk" >> "$GITHUB_OUTPUT"
-            echo "APK: $APK_FILE"
-          else
-            echo "No APK found"
-            ls -la app/build/outputs/apk/ 2>/dev/null || echo "APK directory does not exist"
+          DEBUG_APK=$(find app/build/outputs/apk -name "*-debug.apk" -type f | head -1 || true)
+          RELEASE_APK=$(find app/build/outputs/apk -name "*-release-unsigned.apk" -o -name "*-release.apk" -type f | head -1 || true)
+          mkdir -p ../artifacts
+          if [[ -n "$DEBUG_APK" ]]; then
+            cp "$DEBUG_APK" "../artifacts/whiskful-android-debug.apk"
+            echo "debug=../artifacts/whiskful-android-debug.apk" >> "$GITHUB_OUTPUT"
+          fi
+          if [[ -n "$RELEASE_APK" ]]; then
+            cp "$RELEASE_APK" "../artifacts/whiskful-android-release.apk"
+            echo "release=../artifacts/whiskful-android-release.apk" >> "$GITHUB_OUTPUT"
+          fi
+          echo "DEBUG_APK: $DEBUG_APK"
+          echo "RELEASE_APK: $RELEASE_APK"
+          ls -la ../artifacts 2>/dev/null || true
+          if [[ -z "$DEBUG_APK" && -z "$RELEASE_APK" ]]; then
+            echo "No APKs found"
             exit 1
           fi
 
@@ -120,19 +130,30 @@ jobs:
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
-          files: ./whiskful-android.apk
           tag_name: ${{ steps.version.outputs.tag }}
-          name: WhiskFul APK ${{ steps.version.outputs.version }}
+          name: WiskFul APK ${{ steps.version.outputs.version }}
           body_path: release_notes.md
           generate_release_notes: false
           prerelease: true
           make_latest: true
+          files: |
+            ${{ steps.apk.outputs.debug }}
+            ${{ steps.apk.outputs.release }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Upload APK artifact
+      - name: Upload debug APK artifact
+        if: steps.apk.outputs.debug != ''
         uses: actions/upload-artifact@v4
         with:
-          name: whiskful-apk-${{ steps.version.outputs.version }}
-          path: ./whiskful-android.apk
+          name: whiskful-apk-${{ steps.version.outputs.version }}-debug
+          path: ${{ steps.apk.outputs.debug }}
+          retention-days: 90
+
+      - name: Upload release APK artifact
+        if: steps.apk.outputs.release != ''
+        uses: actions/upload-artifact@v4
+        with:
+          name: whiskful-apk-${{ steps.version.outputs.version }}-release
+          path: ${{ steps.apk.outputs.release }}
           retention-days: 90

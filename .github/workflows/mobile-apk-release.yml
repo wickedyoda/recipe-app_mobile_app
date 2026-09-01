@@ -77,9 +77,9 @@ jobs:
         run: |
           if [[ -n "${{ secrets.APK_SIGNING_KEY }}" ]]; then
             mkdir -p /tmp/keystore
-            printf '%s' "${{ secrets.APK_SIGNING_KEY }}" | base64 -d > /tmp/keystore/whiskful-release.keystore
-            echo "store_file=/tmp/keystore/whiskful-release.keystore" >> "$GITHUB_ENV"
-            echo "Keystore prepared: $(ls -l /tmp/keystore/whiskful-release.keystore)"
+            printf '%s' "${{ secrets.APK_SIGNING_KEY }}" | base64 -d > /tmp/keystore/wiskful-release.keystore
+            echo "store_file=/tmp/keystore/wiskful-release.keystore" >> "$GITHUB_ENV"
+            echo "Keystore prepared: $(ls -l /tmp/keystore/wiskful-release.keystore)"
           else
             echo "APK_SIGNING_KEY secret not set; release APK will be unsigned"
           fi
@@ -88,6 +88,8 @@ jobs:
         run: |
           cd android
           BUILD_TYPE="${{ github.event.inputs.build_type == 'all' && 'all' || github.event.inputs.build_type }}"
+          echo "BUILD_TYPE=$BUILD_TYPE"
+          ls -la gradlew
           if [[ "$BUILD_TYPE" == "all" || "$BUILD_TYPE" == "debug" ]]; then
             ./gradlew :app:assembleDebug --no-daemon 2>&1
           fi
@@ -107,12 +109,12 @@ jobs:
           RELEASE_APK=$(find app/build/outputs/apk -name "*-release-unsigned.apk" -o -name "*-release.apk" -type f | head -1 || true)
           mkdir -p ../artifacts
           if [[ -n "$DEBUG_APK" ]]; then
-            cp "$DEBUG_APK" "../artifacts/whiskful-android-debug.apk"
-            echo "debug=../artifacts/whiskful-android-debug.apk" >> "$GITHUB_OUTPUT"
+            cp "$DEBUG_APK" "../artifacts/wiskful-android-debug.apk"
+            echo "debug=../artifacts/wiskful-android-debug.apk" >> "$GITHUB_OUTPUT"
           fi
           if [[ -n "$RELEASE_APK" ]]; then
-            cp "$RELEASE_APK" "../artifacts/whiskful-android-release.apk"
-            echo "release=../artifacts/whiskful-android-release.apk" >> "$GITHUB_OUTPUT"
+            cp "$RELEASE_APK" "../artifacts/wiskful-android-release.apk"
+            echo "release=../artifacts/wiskful-android-release.apk" >> "$GITHUB_OUTPUT"
           fi
           echo "DEBUG_APK: $DEBUG_APK"
           echo "RELEASE_APK: $RELEASE_APK"
@@ -162,7 +164,7 @@ jobs:
         if: steps.apk.outputs.debug != ''
         uses: actions/upload-artifact@v4
         with:
-          name: whiskful-apk-${{ steps.version.outputs.version }}-debug
+          name: wiskful-apk-${{ steps.version.outputs.version }}-debug
           path: ${{ steps.apk.outputs.debug }}
           retention-days: 90
 
@@ -170,6 +172,6 @@ jobs:
         if: steps.apk.outputs.release != ''
         uses: actions/upload-artifact@v4
         with:
-          name: whiskful-apk-${{ steps.version.outputs.version }}-release
+          name: wiskful-apk-${{ steps.version.outputs.version }}-release
           path: ${{ steps.apk.outputs.release }}
           retention-days: 90

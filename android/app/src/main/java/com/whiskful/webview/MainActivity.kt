@@ -4,26 +4,38 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.net.Uri
 import android.os.Bundle
+import android.os.Environment
+import android.util.Log
+import android.view.View
+import android.webkit.ConsoleMessage
 import android.webkit.WebChromeClient
 import android.webkit.WebResourceRequest
 import android.webkit.WebView
 import android.webkit.WebViewClient
 import android.widget.EditText
+import android.widget.FrameLayout
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.WindowInsetsControllerCompat
+import java.io.File
+import java.io.FileWriter
 
 private const val PREFS_NAME = "host_prefs"
 private const val KEY_HOST = "host_name"
+private const val TAG = "WiskFul"
 
 class MainActivity : AppCompatActivity() {
     private lateinit var urlInput: EditText
+    private var rootView: FrameLayout? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         window.statusBarColor = android.graphics.Color.parseColor("#0f1115")
         WindowInsetsControllerCompat(window, window.decorView).isAppearanceLightStatusBars = false
+
+        AppLog.init(this)
+        AppLog.i("App started")
 
         val prefs = getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
         val savedHost = prefs.getString(KEY_HOST, "").orEmpty()
@@ -74,8 +86,11 @@ class MainActivity : AppCompatActivity() {
 
     @SuppressLint("SetJavaScriptEnabled")
     private fun launchWebView(host: String) {
+        AppLog.i("Launching WebView for host=$host")
         val webView = WebView(this)
-        setContentView(webView)
+        rootView = FrameLayout(this)
+        rootView?.addView(webView)
+        setContentView(rootView)
 
         val url = if (host.startsWith("http://") || host.startsWith("https://")) host else "https://$host"
         val ws = webView.settings
@@ -93,11 +108,84 @@ class MainActivity : AppCompatActivity() {
                 val requestUri = request.url
                 val requestHost = requestUri?.host
                 val allowedHost = Uri.parse(url).host
-                return requestHost != allowedHost
+                val override = requestHost != allowedHost
+                if (override) {
+                    AppLog.w("Blocked navigation: ${requestUri} (allowed=$allowedHost)")
+                }
+                return override
+            }
+
+            override fun onPageFinished(view: WebView, url: String) {
+                super.onPageFinished(view, url)
+                AppLog.i("Page loaded: $url")
+            }
+
+            override fun onReceivedError(view: WebView, request: WebResourceRequest, error: android.webkit.WebResourceError) {
+                super.onReceivedError(view, request, error)
+                AppLog.e("Web resource error: ${error.description} url=${request.url}")
             }
         }
 
-        webView.webChromeClient = WebChromeClient()
+        webView.webChromeClient = object : WebChromeClient() {
+            override fun onConsoleMessage(consoleMessage: ConsoleMessage): Boolean {
+                val msg = "${consoleMessage.sourceId()}:${consoleMessage.lineNumber()} ${consoleMessage.message()}"
+                when (consoleMessage.messageLevel()) {
+                    android.webkit.ConsoleMessage.MessageLevel.ERROR -> AppLog.e(msg)
+                    android.webkit.ConsoleMessage.MessageLevel.WARNING -> AppLog.w(msg)
+                    else -> AppLog.d(msg)
+                }
+                return true
+            }
+        }
+
+        rootView?.let { attachLogFab(it) }
         webView.loadUrl(url)
+    }
+
+    private fun attachLogFab(container: FrameLayout) {
+        val fab = android.widget.Button(this).apply {
+            text = "Logs"
+            alpha = 0.85f
+            val px = (16 * resources.displayMetrics.density).toInt()
+            val params = FrameLayout.LayoutParams(
+                FrameLayout.LayoutParams.WRAP_CONTENT,
+                FrameLayout.LayoutParams.WRAP_CONTENT
+            ).apply {
+                marginEnd = px
+                bottomMargin = px
+                gravity = android.view.Gravity.END or android.view.Gravity.BOTTOM
+            }
+            layoutParams = params
+            setPadding(px, (px / 2), px, (px / 2))
+            setOnClickListener {
+                shareLog()
+            }
+        }
+        container.addView(fab)
+    }
+
+    private fun shareLog() {
+        try {
+            val logFile = AppLog.getLogFile()
+            if (logFile == null || !logFile.exists()) {
+                Toast.makeText(this, "No log file yet", Toast.LENGTH_SHORT).show()
+                return
+            }
+            val uri = androidx.core.content.FileProvider.getUriForFile(
+                this,
+                "$packageName.fileprovider",
+                logFile
+            )
+            val intent = android.content.Intent(android.content.Intent.ACTION_SEND).apply {
+                type = "text/plain"
+                putExtra(android.content.Intent.EXTRA_STREAM, uri)
+                addFlags(android.content.Intent.FLAG_GRANT_READ_URI_PERMISSION)
+            }
+            startActivity(android.content.Intent.createChooser(intent, "Share WiskFul logs"))
+            AppLog.i("Shared log file=${logFile.absolutePath} size=${logFile.length()}")
+        } catch (e: Exception) {
+            Log.e(TAG, "Failed to share logs", e)
+            Toast.makeText(this, "Failed to share logs", Toast.LENGTH_SHORT).show()
+        }
     }
 }

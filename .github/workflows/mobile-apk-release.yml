@@ -60,7 +60,8 @@ jobs:
         run: |
           cd android
           sed -i 's/versionCode = [0-9]*/versionCode = 1/' app/build.gradle.kts
-          sed -i "s/versionName = \".*\"/versionName = \"${{ steps.version.outputs.version }}\"/" app/build.gradle.kts
+          VERSION="${{ steps.version.outputs.version }}"
+          sed -i "s/versionName = \"[^\"]*\"/versionName = \"${VERSION}\"/" app/build.gradle.kts
           echo "--- Updated build.gradle.kts ---"
           grep -A2 "versionCode\|versionName" app/build.gradle.kts
 

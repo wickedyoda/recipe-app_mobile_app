@@ -32,10 +32,7 @@ jobs:
       - name: Compute next alpha patch version
         id: version
         run: |
-          set -e
-          latest="$("
-            gh release list --repo '${{ github.repository }}' --limit 1 --json tagName --jq '.[0].tagName // empty' 2>/dev/null || true
-          )"
+          latest=$(gh release list --repo ${{ github.repository }} --limit 1 --json tagName --jq '.[0].tagName // empty' 2>/dev/null || true)
           if [[ "$latest" =~ ^alpha-1\.0\.([0-9]+)$ ]]; then
             next=$(( (${BASH_REMATCH[1]} + 1) ))
           else

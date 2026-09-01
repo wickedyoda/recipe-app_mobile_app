@@ -88,6 +88,8 @@ jobs:
         run: |
           cd android
           BUILD_TYPE="${{ github.event.inputs.build_type == 'all' && 'all' || github.event.inputs.build_type }}"
+          echo "BUILD_TYPE=$BUILD_TYPE"
+          ls -la gradlew
           if [[ "$BUILD_TYPE" == "all" || "$BUILD_TYPE" == "debug" ]]; then
             ./gradlew :app:assembleDebug --no-daemon 2>&1
           fi

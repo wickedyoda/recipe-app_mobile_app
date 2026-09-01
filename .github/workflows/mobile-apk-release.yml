@@ -90,14 +90,17 @@ jobs:
       - name: Build debug and release APKs
         env:
           BUILD_TYPE: ${{ steps.build_type.outputs.build_type }}
+          SIGNING_STORE_FILE: /tmp/keystore/wiskful-release.keystore
+          SIGNING_STORE_PASSWORD: ${{ secrets.APK_KEYSTORE_PASSWORD }}
+          SIGNING_KEY_ALIAS: ${{ secrets.APK_KEY_ALIAS }}
+          SIGNING_KEY_PASSWORD: ${{ secrets.APK_KEY_PASSWORD }}
         run: |
           cd android
-          echo "BUILD_TYPE=$BUILD_TYPE"
           if [[ "$BUILD_TYPE" == "all" || "$BUILD_TYPE" == "debug" ]]; then
-            ./gradlew :app:assembleDebug --no-daemon 2>&1
+            ./gradlew :app:assembleDebug --no-daemon
           fi
           if [[ "$BUILD_TYPE" == "all" || "$BUILD_TYPE" == "release" ]]; then
-            ./gradlew :app:assembleRelease --no-daemon 2>&1
+            ./gradlew :app:assembleRelease --no-daemon
           fi
 
       - name: Find and copy APKs

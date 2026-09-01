@@ -73,14 +73,15 @@ jobs:
           chmod +x gradlew 2>/dev/null || true
 
       - name: Prepare signing keystore
-        if: secrets.APK_SIGNING_KEY != ''
         run: |
-          mkdir -p /tmp/keystore
-          printf '%s' "${{ secrets.APK_SIGNING_KEY }}" | base64 -d > /tmp/keystore/whiskful-release.keystore
-          echo "store_file=/tmp/keystore/whiskful-release.keystore" >> "$GITHUB_ENV"
-          echo "Keystore prepared: $(ls -l /tmp/keystore/whiskful-release.keystore)"
-        env:
-          APK_SIGNING_KEY: ${{ secrets.APK_SIGNING_KEY }}
+          if [[ -n "${{ secrets.APK_SIGNING_KEY }}" ]]; then
+            mkdir -p /tmp/keystore
+            printf '%s' "${{ secrets.APK_SIGNING_KEY }}" | base64 -d > /tmp/keystore/whiskful-release.keystore
+            echo "store_file=/tmp/keystore/whiskful-release.keystore" >> "$GITHUB_ENV"
+            echo "Keystore prepared: $(ls -l /tmp/keystore/whiskful-release.keystore)"
+          else
+            echo "APK_SIGNING_KEY secret not set; release APK will be unsigned"
+          fi
 
       - name: Build debug and release APKs
         run: |

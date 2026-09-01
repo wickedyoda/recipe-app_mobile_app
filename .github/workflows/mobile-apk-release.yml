@@ -33,7 +33,7 @@ jobs:
         id: version
         run: |
           set -e
-          latest="$(
+          latest="$("
             gh release list --repo '${{ github.repository }}' --limit 1 --json tagName --jq '.[0].tagName // empty' 2>/dev/null || true
           )"
           if [[ "$latest" =~ ^alpha-1\.0\.([0-9]+)$ ]]; then
@@ -61,7 +61,7 @@ jobs:
           cd android
           sed -i 's/versionCode = [0-9]*/versionCode = 1/' app/build.gradle.kts
           VERSION="${{ steps.version.outputs.version }}"
-          sed -i "s/versionName = \"[^\"]*\"/versionName = \"${VERSION}\"/" app/build.gradle.kts
+          sed -i 's/versionName = "[^"]*"/versionName = "'"${VERSION}"'"/' app/build.gradle.kts
           echo "--- Updated build.gradle.kts ---"
           grep -A2 "versionCode\|versionName" app/build.gradle.kts
 
@@ -84,9 +84,18 @@ jobs:
             echo "APK_SIGNING_KEY secret not set; release APK will be unsigned"
           fi
 
+      - name: Set build type
+        id: build_type
+        run: |
+          BUILD_TYPE="${{ inputs.build_type || 'all' }}"
+          echo "build_type=$BUILD_TYPE" >> "$GITHUB_OUTPUT"
+
       - name: Build debug and release APKs
         env:
-          BUILD_TYPE: ${{ inputs.build_type || 'all' }}
+          BUILD_TYPE: ${{ steps.build_type.outputs.build_type }}
+          SIGNING_KEYSTORE_PASSWORD: ${{ secrets.APK_KEYSTORE_PASSWORD }}
+          SIGNING_KEY_ALIAS: ${{ secrets.APK_KEY_ALIAS }}
+          SIGNING_KEY_PASSWORD: ${{ secrets.APK_KEY_PASSWORD }}
         run: |
           cd android
           echo "BUILD_TYPE=$BUILD_TYPE"
@@ -95,11 +104,13 @@ jobs:
             ./gradlew :app:assembleDebug --no-daemon 2>&1
           fi
           if [[ "$BUILD_TYPE" == "all" || "$BUILD_TYPE" == "release" ]]; then
-            SIGNING_STORE_FILE="${{ env.store_file }}" \
-            SIGNING_STORE_PASSWORD="${{ secrets.APK_KEYSTORE_PASSWORD }}" \
-            SIGNING_KEY_ALIAS="${{ secrets.APK_KEY_ALIAS }}" \
-            SIGNING_KEY_PASSWORD="${{ secrets.APK_KEY_PASSWORD }}" \
-            ./gradlew :app:assembleRelease --no-daemon 2>&1
+            STORE_FILE="/tmp/keystore/wiskful-release.keystore"
+            if [[ -f "$STORE_FILE" ]]; then
+              SIGNING_STORE_FILE="$STORE_FILE" ./gradlew :app:assembleRelease --no-daemon 2>&1
+            else
+              echo "Keystore not found; building unsigned release"
+              ./gradlew :app:assembleRelease --no-daemon 2>&1
+            fi
           fi
 
       - name: Find and copy APKs

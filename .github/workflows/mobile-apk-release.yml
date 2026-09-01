@@ -16,8 +16,8 @@ on:
           - release
 
 permissions:
-  contents: write
-  packages: write
+    contents: write
+    packages: write
 
 jobs:
   build-and-release:
@@ -35,7 +35,7 @@ jobs:
           set -e
           latest=$(gh release list --repo ${{ github.repository }} --limit 1 --json tagName --jq '.[0].tagName // empty' 2>/dev/null || true)
           if [[ "$latest" =~ ^alpha-1\.0\.([0-9]+)$ ]]; then
-            next=$(( (${BASH_REMATCH[1]} + 1) ))
+            next=$(( ${BASH_REMATCH[1]} + 1 ))
           else
             next=1
           fi
@@ -56,15 +56,9 @@ jobs:
 
       - name: Set version name
         run: |
-          cd android
-          # Increment version code
-          sed -i 's/versionCode = [0-9]*/versionCode = 1/' app/build.gradle.kts
-          # Update versionName using simple sed with bash escaping
-          NEW_VER="${{ steps.version.outputs.version }}"
-          # Use perl for safe in-place replacement
-          perl -i -pe "s/versionName = \"[^\"]*\"/versionName = \"\${NEW_VER}\"/" app/build.gradle.kts
-          echo "--- Updated build.gradle.kts ---"
-          grep "versionName" app/build.gradle.kts || echo "Could not find versionName"
+          cp scripts/set_version.py android/
+          python3 android/set_version.py "${{ steps.version.outputs.version }}" android/app/build.gradle.kts
+          grep "versionName" android/app/build.gradle.kts
 
       - name: Generate Gradle wrapper
         run: |
@@ -79,8 +73,6 @@ jobs:
           if [[ -n "${{ secrets.APK_SIGNING_KEY }}" ]]; then
             mkdir -p /tmp/keystore
             printf '%s' "${{ secrets.APK_SIGNING_KEY }}" | base64 -d > /tmp/keystore/wiskful-release.keystore
-            echo "store_file=/tmp/keystore/wiskful-release.keystore" >> "$GITHUB_ENV"
-            echo "Keystore prepared: $(ls -l /tmp/keystore/wiskful-release.keystore)"
           else
             echo "APK_SIGNING_KEY secret not set; release APK will be unsigned"
           fi
@@ -101,17 +93,11 @@ jobs:
         run: |
           cd android
           echo "BUILD_TYPE=$BUILD_TYPE"
-          ls -la gradlew
           if [[ "$BUILD_TYPE" == "all" || "$BUILD_TYPE" == "debug" ]]; then
             ./gradlew :app:assembleDebug --no-daemon 2>&1
           fi
           if [[ "$BUILD_TYPE" == "all" || "$BUILD_TYPE" == "release" ]]; then
-            if [[ -f /tmp/keystore/wiskful-release.keystore ]]; then
-              SIGNING_STORE_FILE=/tmp/keystore/wiskful-release.keystore ./gradlew :app:assembleRelease --no-daemon 2>&1
-            else
-              echo "Keystore not found; building unsigned release"
-              ./gradlew :app:assembleRelease --no-daemon 2>&1
-            fi
+            ./gradlew :app:assembleRelease --no-daemon 2>&1
           fi
 
       - name: Find and copy APKs
@@ -129,11 +115,7 @@ jobs:
             cp "$RELEASE_APK" "../artifacts/wiskful-android-release.apk"
             echo "release=../artifacts/wiskful-android-release.apk" >> "$GITHUB_OUTPUT"
           fi
-          echo "DEBUG_APK: $DEBUG_APK"
-          echo "RELEASE_APK: $RELEASE_APK"
-          ls -la ../artifacts 2>/dev/null || true
           if [[ -z "$DEBUG_APK" && -z "$RELEASE_APK" ]]; then
-            echo "No APKs found"
             exit 1
           fi
 
@@ -142,18 +124,14 @@ jobs:
         run: |
           LAST_TAG=$(git describe --tags --match "alpha-1.0.*" 2>/dev/null | tail -1)
           if [[ -n "$LAST_TAG" ]]; then
-            echo "Previous tag: $LAST_TAG"
             NOTES=$(git log --oneline "$LAST_TAG"..HEAD --pretty=format:"- %s (%h)")
           else
-            echo "No previous alpha release tag found"
             NOTES=$(git log --oneline HEAD --since="2026-08-01" --pretty=format:"- %s (%h)")
           fi
           if [[ -z "$NOTES" ]]; then
             NOTES="New APK build for version ${{ steps.version.outputs.version }}"
           fi
           echo "$NOTES" > release_notes.md
-          echo "Release notes:"
-          cat release_notes.md
           echo "release_notes<<EOF" >> "$GITHUB_OUTPUT"
           cat release_notes.md >> "$GITHUB_OUTPUT"
           echo "EOF" >> "$GITHUB_OUTPUT"
@@ -164,7 +142,6 @@ jobs:
           tag_name: ${{ steps.version.outputs.tag }}
           name: WiskFul APK ${{ steps.version.outputs.version }}
           body_path: release_notes.md
-          generate_release_notes: false
           prerelease: true
           make_latest: true
           files: |

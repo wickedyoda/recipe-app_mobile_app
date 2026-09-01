@@ -89,6 +89,10 @@ jobs:
           BUILD_TYPE: ${{ inputs.build_type || 'all' }}
         run: |
           cd android
+<<<<<<< HEAD
+=======
+          BUILD_TYPE="${{ inputs.build_type }}"
+>>>>>>> main
           echo "BUILD_TYPE=$BUILD_TYPE"
           ls -la gradlew
           if [[ "$BUILD_TYPE" == "all" || "$BUILD_TYPE" == "debug" ]]; then

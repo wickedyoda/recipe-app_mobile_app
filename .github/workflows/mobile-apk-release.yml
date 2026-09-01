@@ -43,7 +43,7 @@ jobs:
           fi
           ver="alpha-1.0.$(printf '%02d' "$next")"
           echo "version=$ver" >> "$GITHUB_OUTPUT"
-          echo "tag=v$ver" >> "$GITHUB_OUTPUT"
+          echo "tag=$ver" >> "$GITHUB_OUTPUT"
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 

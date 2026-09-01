@@ -29,21 +29,19 @@ android {
 
     buildTypes {
         release {
-            // Sign only when all keystore env vars are present.
-            // When absent, AGP produces an unsigned APK (no failure).
-            val storeFile = System.getenv("SIGNING_STORE_FILE")
-            val storePassword = System.getenv("SIGNING_STORE_PASSWORD")
-            val keyAlias = System.getenv("SIGNING_KEY_ALIAS")
-            val keyPassword = System.getenv("SIGNING_KEY_PASSWORD")
+            val ksStoreFile = System.getenv("SIGNING_STORE_FILE")
+            val ksStorePassword = System.getenv("SIGNING_STORE_PASSWORD")
+            val ksKeyAlias = System.getenv("SIGNING_KEY_ALIAS")
+            val ksKeyPassword = System.getenv("SIGNING_KEY_PASSWORD")
 
-            if (storeFile != null && storePassword != null && keyAlias != null && keyPassword != null) {
+            if (ksStoreFile != null && ksStorePassword != null && ksKeyAlias != null && ksKeyPassword != null) {
                 signingConfigs {
                     create("release") {
-                        storeFile = File(storeFile)
-                        storePassword = storePassword
+                        storeFile = File(ksStoreFile)
+                        storePassword = ksStorePassword
                         storeType = "pkcs12"
-                        keyAlias = keyAlias
-                        keyPassword = keyPassword
+                        keyAlias = ksKeyAlias
+                        keyPassword = ksKeyPassword
                     }
                 }
                 signingConfig = signingConfigs.getByName("release")
@@ -57,3 +55,4 @@ android {
 dependencies {
     implementation("androidx.appcompat:appcompat:1.7.0")
     implementation("androidx.core:core-ktx:1.13.1")
+}

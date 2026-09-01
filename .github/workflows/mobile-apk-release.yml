@@ -55,9 +55,9 @@ jobs:
 
       - name: Set version name
         run: |
+          cp scripts/set_version.py android/
           cd android
           sed -i 's/versionCode = [0-9]*/versionCode = 1/' app/build.gradle.kts
-          cp scripts/set_version.py .
           python3 set_version.py "${{ steps.version.outputs.version }}" app/build.gradle.kts
           echo "--- Updated build.gradle.kts ---"
           grep -A2 "versionCode\|versionName" app/build.gradle.kts

@@ -32,7 +32,8 @@ jobs:
       - name: Compute next alpha patch version
         id: version
         run: |
-          latest="$(gh release list --repo ${{ github.repository }} --limit 1 --json tagName --jq '.[0].tagName // empty' 2>/dev/null || true)"
+          set -e
+          latest=$(gh release list --repo ${{ github.repository }} --limit 1 --json tagName --jq '.[0].tagName // empty' 2>/dev/null || true)
           if [[ "$latest" =~ ^alpha-1\.0\.([0-9]+)$ ]]; then
             next=$(( (${BASH_REMATCH[1]} + 1) ))
           else
@@ -55,12 +56,15 @@ jobs:
 
       - name: Set version name
         run: |
-          cp scripts/set_version.py android/
           cd android
+          # Increment version code
           sed -i 's/versionCode = [0-9]*/versionCode = 1/' app/build.gradle.kts
-          python3 set_version.py "${{ steps.version.outputs.version }}" app/build.gradle.kts
+          # Update versionName using simple sed with bash escaping
+          NEW_VER="${{ steps.version.outputs.version }}"
+          # Use perl for safe in-place replacement
+          perl -i -pe "s/versionName = \"[^\"]*\"/versionName = \"\${NEW_VER}\"/" app/build.gradle.kts
           echo "--- Updated build.gradle.kts ---"
-          grep -A2 "versionCode\|versionName" app/build.gradle.kts
+          grep "versionName" app/build.gradle.kts || echo "Could not find versionName"
 
       - name: Generate Gradle wrapper
         run: |

@@ -32,9 +32,9 @@ jobs:
       - name: Compute next alpha patch version
         id: version
         run: |
-          set -euo pipefail
+          set -e
           # Extract patch number from existing tags (alpha-1.0.XX)
-          latest=$(gh release list --repo ${{ github.repository }} --limit 100 --json tagName --jq '.[].tagName' | { grep '^alpha-1\.0\.' || true; } | sort -V | tail -1)
+          latest=$(gh release list --repo ${{ github.repository }} --limit 100 --json tagName --jq '.[].tagName' | grep '^alpha-1\.0\.' | sort -V | tail -1)
           if [[ "$latest" =~ ^alpha-1\.0\.([0-9]+)$ ]]; then
             next=$(( ${BASH_REMATCH[1]} + 1 ))
           else

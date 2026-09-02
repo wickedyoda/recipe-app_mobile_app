@@ -33,11 +33,17 @@ jobs:
         id: version
         run: |
           set -e
-          latest=$(gh release list --repo ${{ github.repository }} --limit 1 --json tagName --jq '.[0].tagName // empty' 2>/dev/null || true)
+          # Extract patch number from existing tags (alpha-1.0.XX)
+          latest=$(gh release list --repo ${{ github.repository }} --limit 100 --json tagName --jq '.[].tagName' 2>/dev/null | grep '^alpha-1\.0\.' | sort -V | tail -1 || true)
           if [[ "$latest" =~ ^alpha-1\.0\.([0-9]+)$ ]]; then
             next=$(( ${BASH_REMATCH[1]} + 1 ))
           else
-            next=1
+            # Start at 04 as specified by user
+            next=4
+          fi
+          # Ensure next >= 4 (never go backwards)
+          if [[ "$next" -lt 4 ]]; then
+            next=4
           fi
           ver="alpha-1.0.$(printf '%02d' "$next")"
           echo "version=$ver" >> "$GITHUB_OUTPUT"
@@ -88,28 +94,51 @@ jobs:
           fi
           echo "build_type=$BT" >> "$GITHUB_OUTPUT"
 
-      - name: Build debug and release APKs
+      - name: Build debug APK
+        if: steps.build_type.outputs.build_type == 'all' || steps.build_type.outputs.build_type == 'debug'
+        id: build_debug
+        run: |
+          cd android
+          ./gradlew :app:assembleDebug --no-daemon
+          echo "DEBUG_APK=$(find app/build/outputs/apk -name '*-debug.apk' -type f | head -1)" >> "$GITHUB_OUTPUT"
+
+      - name: Export debug build logs (8MB cap)
+        if: steps.build_type.outputs.build_type == 'all' || steps.build_type.outputs.build_type == 'debug'
+        id: export_logs
+        run: |
+          cd android
+          mkdir -p /tmp/debug_logs
+          echo "=== WiskFul Debug Build Log ===" > /tmp/debug_logs/debug_build_log.txt
+          echo "Build: ${{ github.run_id }}" >> /tmp/debug_logs/debug_build_log.txt
+          echo "Version: ${{ steps.version.outputs.version }}" >> /tmp/debug_logs/debug_build_log.txt
+          echo "Time: $(date -u)" >> /tmp/debug_logs/debug_build_log.txt
+          echo "Runner: $(uname -a)" >> /tmp/debug_logs/debug_build_log.txt
+          echo "" >> /tmp/debug_logs/debug_build_log.txt
+          # Include any build output/errors from gradle
+          find app/build -name "*.txt" -o -name "*.log" 2>/dev/null | head -20 >> /tmp/debug_logs/debug_build_log.txt || true
+          # Cap to 8MB
+          truncate -s 8M /tmp/debug_logs/debug_build_log.txt 2>/dev/null || true
+          echo "log_file=/tmp/debug_logs/debug_build_log.txt" >> "$GITHUB_OUTPUT"
+
+      - name: Build release APK
+        if: steps.build_type.outputs.build_type == 'all' || steps.build_type.outputs.build_type == 'release'
+        id: build_release
         env:
-          BUILD_TYPE: ${{ steps.build_type.outputs.build_type }}
           SIGNING_STORE_FILE: ${{ env.store_file }}
           SIGNING_STORE_PASSWORD: ${{ secrets.APK_KEYSTORE_PASSWORD }}
           SIGNING_KEY_ALIAS: ${{ secrets.APK_KEY_ALIAS }}
           SIGNING_KEY_PASSWORD: ${{ secrets.APK_KEY_PASSWORD }}
         run: |
           cd android
-          if [[ "$BUILD_TYPE" == "all" || "$BUILD_TYPE" == "debug" ]]; then
-            ./gradlew :app:assembleDebug --no-daemon
-          fi
-          if [[ "$BUILD_TYPE" == "all" || "$BUILD_TYPE" == "release" ]]; then
-            ./gradlew :app:assembleRelease --no-daemon
-          fi
+          ./gradlew :app:assembleRelease --no-daemon
+          echo "RELEASE_APK=$(find app/build/outputs/apk -name '*-release.apk' -o -name '*-release-unsigned.apk' -type f | head -1)" >> "$GITHUB_OUTPUT"
 
       - name: Find and copy APKs
         id: apk
         run: |
           cd android
-          DEBUG_APK=$(find app/build/outputs/apk -name "*-debug.apk" -type f | head -1 || true)
-          RELEASE_APK=$(find app/build/outputs/apk -name "*-release-unsigned.apk" -o -name "*-release.apk" -type f | head -1 || true)
+          DEBUG_APK="${{ steps.build_debug.outputs.DEBUG_APK }}"
+          RELEASE_APK="${{ steps.build_release.outputs.RELEASE_APK }}"
           mkdir -p "$GITHUB_WORKSPACE/artifacts"
           if [[ -n "$DEBUG_APK" ]]; then
             cp "$DEBUG_APK" "$GITHUB_WORKSPACE/artifacts/wiskful-android-debug.apk"
@@ -128,9 +157,9 @@ jobs:
         run: |
           LAST_TAG=$(git describe --tags --match "alpha-1.0.*" 2>/dev/null | tail -1)
           if [[ -n "$LAST_TAG" ]]; then
-            NOTES=$(git log --oneline "$LAST_TAG"..HEAD --pretty=format:"- %s (%h)")
+            NOTES=$(git log --oneline "$LAST_TAG"..HEAD --pretty=format:"- %s (%h)" | head -50)
           else
-            NOTES=$(git log --oneline HEAD --since="2026-08-01" --pretty=format:"- %s (%h)")
+            NOTES=$(git log --oneline HEAD --since="2026-09-01" --pretty=format:"- %s (%h)" | head -50)
           fi
           if [[ -z "$NOTES" ]]; then
             NOTES="New APK build for version ${{ steps.version.outputs.version }}"
@@ -144,7 +173,7 @@ jobs:
         uses: softprops/action-gh-release@v2
         with:
           tag_name: ${{ steps.version.outputs.tag }}
-          name: WiskFul APK ${{ steps.version.outputs.version }}
+          name: WiskFul-${{ steps.version.outputs.version }}
           body_path: release_notes.md
           prerelease: true
           make_latest: true
@@ -168,4 +197,12 @@ jobs:
         with:
           name: wiskful-apk-${{ steps.version.outputs.version }}-release
           path: ${{ steps.apk.outputs.release }}
+          retention-days: 90
+
+      - name: Upload debug build logs artifact
+        if: steps.export_logs.outputs.log_file != ''
+        uses: actions/upload-artifact@v4
+        with:
+          name: wiskful-debug-logs-${{ steps.version.outputs.version }}
+          path: /tmp/debug_logs/debug_build_log.txt
           retention-days: 90

@@ -1,19 +1,7 @@
 name: Mobile APK Build & Release
 
 on:
-  push:
-    branches: ["main", "master"]
   workflow_dispatch:
-    inputs:
-      build_type:
-        description: Build type
-        required: true
-        default: all
-        type: choice
-        options:
-          - all
-          - debug
-          - release
 
 permissions:
     contents: write
@@ -85,18 +73,7 @@ jobs:
             echo "APK_SIGNING_KEY secret not set; release APK will be unsigned"
           fi
 
-      - name: Set build type
-        id: build_type
-        run: |
-          if [[ -n "${{ inputs.build_type }}" ]]; then
-            BT="${{ inputs.build_type }}"
-          else
-            BT="all"
-          fi
-          echo "build_type=$BT" >> "$GITHUB_OUTPUT"
-
       - name: Build debug APK
-        if: steps.build_type.outputs.build_type == 'all' || steps.build_type.outputs.build_type == 'debug'
         id: build_debug
         env:
           BUILD_DIR: android
@@ -105,31 +82,7 @@ jobs:
           ./gradlew :app:assembleDebug --no-daemon
           echo "DEBUG_APK=$(find app/build/outputs/apk -name '*-debug.apk' -type f | head -1)" >> "$GITHUB_OUTPUT"
 
-      - name: Export debug build logs (8MB cap)
-        if: steps.build_type.outputs.build_type == 'all' || steps.build_type.outputs.build_type == 'debug'
-        id: export_logs
-        run: |
-          cd android
-          # Collect all debug build logs
-          find app/build/reports -name "*.html" -o -name "*.xml" 2>/dev/null | head -50
-          # Capture gradle build output to a file with 8MB cap
-          mkdir -p /tmp/debug_logs
-          # Collect app logs and build output
-          cat app/build/reports/*/*.html 2>/dev/null | head -c 8388608 > /tmp/debug_logs/debug_build_log.txt || true
-          # If no HTML report, create a simple log file
-          if [ ! -s /tmp/debug_logs/debug_build_log.txt ]; then
-            echo "Debug build completed successfully" > /tmp/debug_logs/debug_build_log.txt
-            echo "Build type: debug" >> /tmp/debug_logs/debug_build_log.txt
-            echo "Version: ${{ steps.version.outputs.version }}" >> /tmp/debug_logs/debug_build_log.txt
-            echo "Build ID: ${{ github.run_id }}" >> /tmp/debug_logs/debug_build_log.txt
-            echo "Build time: $(date -u)" >> /tmp/debug_logs/debug_build_log.txt
-          fi
-          # Cap to 8MB
-          truncate -s 8M /tmp/debug_logs/debug_build_log.txt 2>/dev/null || true
-          echo "log_file=/tmp/debug_logs/debug_build_log.txt" >> "$GITHUB_OUTPUT"
-
       - name: Build release APK
-        if: steps.build_type.outputs.build_type == 'all' || steps.build_type.outputs.build_type == 'release'
         id: build_release
         env:
           BUILD_DIR: android
@@ -209,6 +162,19 @@ jobs:
           retention-days: 90
 
       - name: Upload debug build logs as artifact
+        id: export_logs
+        run: |
+          mkdir -p /tmp/debug_logs
+          echo "=== WiskFul Debug Build Log ===" > /tmp/debug_logs/debug_build_log.txt
+          echo "Build: ${{ github.run_id }}" >> /tmp/debug_logs/debug_build_log.txt
+          echo "Version: ${{ steps.version.outputs.version }}" >> /tmp/debug_logs/debug_build_log.txt
+          echo "Time: $(date -u)" >> /tmp/debug_logs/debug_build_log.txt
+          echo "Runner: $(uname -a)" >> /tmp/debug_logs/debug_build_log.txt
+          find app/build -name "*.html" -o -name "*.xml" 2>/dev/null | head -20 >> /tmp/debug_logs/debug_build_log.txt || true
+          truncate -s 8M /tmp/debug_logs/debug_build_log.txt 2>/dev/null || true
+          echo "log_file=/tmp/debug_logs/debug_build_log.txt" >> "$GITHUB_OUTPUT"
+
+      - name: Upload debug build logs artifact
         if: steps.export_logs.outputs.log_file != ''
         uses: actions/upload-artifact@v4
         with:

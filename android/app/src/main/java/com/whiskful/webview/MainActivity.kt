@@ -18,6 +18,8 @@ import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.WindowInsetsControllerCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.doOnApplyWindowInsets
 import java.io.File
 import java.io.FileWriter
 
@@ -93,6 +95,11 @@ class MainActivity : AppCompatActivity() {
         setContentView(rootView)
 
         val url = if (host.startsWith("http://") || host.startsWith("https://")) host else "https://$host"
+        webView.doOnApplyWindowInsets { view, insets ->
+            val bars = insets.getInsets(WindowInsetsCompat.Type.statusBars() or WindowInsetsCompat.Type.navigationBars())
+            view.setPadding(0, bars.top, 0, bars.bottom)
+        }
+
         val ws = webView.settings
         ws.javaScriptEnabled = true
         ws.domStorageEnabled = true

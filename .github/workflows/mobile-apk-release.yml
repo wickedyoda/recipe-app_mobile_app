@@ -103,12 +103,12 @@ jobs:
           RELEASE_APK=$(find app/build/outputs/apk -name "*-release-unsigned.apk" -o -name "*-release.apk" -type f | head -1 || true)
           mkdir -p "$GITHUB_WORKSPACE/artifacts"
           if [[ -n "$DEBUG_APK" ]]; then
-            cp "$DEBUG_APK" "$GITHUB_WORKSPACE/artifacts/wiskful-android-debug.apk"
-            echo "debug=$GITHUB_WORKSPACE/artifacts/wiskful-android-debug.apk" >> "$GITHUB_OUTPUT"
+            cp "$DEBUG_APK" "$GITHUB_WORKSPACE/artifacts/wiskful-android-${{ steps.version.outputs.version }}-debug.apk"
+            echo "debug=$GITHUB_WORKSPACE/artifacts/wiskful-android-${{ steps.version.outputs.version }}-debug.apk" >> "$GITHUB_OUTPUT"
           fi
           if [[ -n "$RELEASE_APK" ]]; then
-            cp "$RELEASE_APK" "$GITHUB_WORKSPACE/artifacts/wiskful-android-release.apk"
-            echo "release=$GITHUB_WORKSPACE/artifacts/wiskful-android-release.apk" >> "$GITHUB_OUTPUT"
+            cp "$RELEASE_APK" "$GITHUB_WORKSPACE/artifacts/wiskful-android-${{ steps.version.outputs.version }}-release.apk"
+            echo "release=$GITHUB_WORKSPACE/artifacts/wiskful-android-${{ steps.version.outputs.version }}-release.apk" >> "$GITHUB_OUTPUT"
           fi
           if [[ -z "$DEBUG_APK" && -z "$RELEASE_APK" ]]; then
             exit 1
@@ -171,7 +171,7 @@ jobs:
           echo "Time: $(date -u)" >> /tmp/debug_logs/debug_build_log.txt
           echo "Runner: $(uname -a)" >> /tmp/debug_logs/debug_build_log.txt
           find app/build -name "*.html" -o -name "*.xml" 2>/dev/null | head -20 >> /tmp/debug_logs/debug_build_log.txt || true
-          truncate -s 8M /tmp/debug_logs/debug_build_log.txt 2>/dev/null || true
+          truncate -s 10M /tmp/debug_logs/debug_build_log.txt 2>/dev/null || true
           echo "log_file=/tmp/debug_logs/debug_build_log.txt" >> "$GITHUB_OUTPUT"
 
       - name: Upload debug build logs artifact

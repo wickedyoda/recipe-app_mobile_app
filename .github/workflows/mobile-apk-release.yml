@@ -32,9 +32,9 @@ jobs:
       - name: Compute next alpha patch version
         id: version
         run: |
-          set -e
+          set -euo pipefail
           # Extract patch number from existing tags (alpha-1.0.XX)
-          latest=$(gh release list --repo ${{ github.repository }} --limit 100 --json tagName --jq '.[].tagName' | grep '^alpha-1\.0\.' | sort -V | tail -1)
+          latest=$(gh release list --repo ${{ github.repository }} --limit 100 --json tagName --jq '.[].tagName' | { grep '^alpha-1\.0\.' || true; } | sort -V | tail -1)
           if [[ "$latest" =~ ^alpha-1\.0\.([0-9]+)$ ]]; then
             next=$(( ${BASH_REMATCH[1]} + 1 ))
           else
@@ -133,14 +133,18 @@ jobs:
         id: build_release
         env:
           BUILD_DIR: android
-          SIGNING_STORE_FILE: ${{ env.store_file }}
-          SIGNING_STORE_PASSWORD: ${{ secrets.APK_KEYSTORE_PASSWORD }}
-          SIGNING_KEY_ALIAS: ${{ secrets.APK_KEY_ALIAS }}
-          SIGNING_KEY_PASSWORD: ${{ secrets.APK_KEY_PASSWORD }}
         run: |
-          cd $BUILD_DIR
+          cd "$BUILD_DIR"
+          if [[ -n "${{ env.store_file }}" && -n "${{ secrets.APK_KEYSTORE_PASSWORD }}" && -n "${{ secrets.APK_KEY_ALIAS }}" && -n "${{ secrets.APK_KEY_PASSWORD }}" ]]; then
+            export SIGNING_STORE_FILE="${{ env.store_file }}"
+            export SIGNING_STORE_PASSWORD="${{ secrets.APK_KEYSTORE_PASSWORD }}"
+            export SIGNING_KEY_ALIAS="${{ secrets.APK_KEY_ALIAS }}"
+            export SIGNING_KEY_PASSWORD="${{ secrets.APK_KEY_PASSWORD }}"
+          else
+            echo "Signing secrets missing; release APK will be unsigned"
+          fi
           ./gradlew :app:assembleRelease --no-daemon
-          echo "RELEASE_APK=$(find app/build/outputs/apk -name '*-release.apk' -o -name '*-release-unsigned.apk' -type f | head -1)" >> "$GITHUB_OUTPUT"
+          echo "RELEASE_APK=$(find app/build/outputs/apk \( -name '*-release.apk' -o -name '*-release-unsigned.apk' \) -type f | head -1)" >> "$GITHUB_OUTPUT"
 
       - name: Find and copy APKs
         id: apk

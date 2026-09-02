@@ -133,9 +133,6 @@ jobs:
         id: build_release
         env:
           BUILD_DIR: android
-=======
-          BUILD_TYPE: ${{ steps.build_type.outputs.build_type }}
->>>>>>> 46028953b824a01d97245781a34bd5ad8cd628b9
           SIGNING_STORE_FILE: ${{ env.store_file }}
           SIGNING_STORE_PASSWORD: ${{ secrets.APK_KEYSTORE_PASSWORD }}
           SIGNING_KEY_ALIAS: ${{ secrets.APK_KEY_ALIAS }}
@@ -149,13 +146,8 @@ jobs:
         id: apk
         run: |
           cd android
-<<<<<<< HEAD
-          DEBUG_APK="${{ steps.build_debug.outputs.DEBUG_APK }}"
-          RELEASE_APK="${{ steps.build_release.outputs.RELEASE_APK }}"
-=======
           DEBUG_APK=$(find app/build/outputs/apk -name "*-debug.apk" -type f | head -1 || true)
           RELEASE_APK=$(find app/build/outputs/apk -name "*-release-unsigned.apk" -o -name "*-release.apk" -type f | head -1 || true)
->>>>>>> 46028953b824a01d97245781a34bd5ad8cd628b9
           mkdir -p "$GITHUB_WORKSPACE/artifacts"
           if [[ -n "$DEBUG_APK" ]]; then
             cp "$DEBUG_APK" "$GITHUB_WORKSPACE/artifacts/wiskful-android-debug.apk"

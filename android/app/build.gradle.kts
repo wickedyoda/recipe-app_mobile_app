@@ -29,10 +29,10 @@ android {
 
     buildTypes {
         release {
-            val ksStoreFile = System.getenv("SIGNING_STORE_FILE") as String?
-            val ksStorePassword = System.getenv("SIGNING_STORE_PASSWORD") as String?
-            val ksKeyAlias = System.getenv("SIGNING_KEY_ALIAS") as String?
-            val ksKeyPassword = System.getenv("SIGNING_KEY_PASSWORD") as String?
+            val ksStoreFile = System.getenv("SIGNING_STORE_FILE")
+            val ksStorePassword = System.getenv("SIGNING_STORE_PASSWORD")
+            val ksKeyAlias = System.getenv("SIGNING_KEY_ALIAS")
+            val ksKeyPassword = System.getenv("SIGNING_KEY_PASSWORD")
 
             if (ksStoreFile != null && ksStorePassword != null && ksKeyAlias != null && ksKeyPassword != null
                 && File(ksStoreFile).exists()) {

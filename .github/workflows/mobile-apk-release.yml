@@ -161,15 +161,16 @@ jobs:
           path: ${{ steps.apk.outputs.release }}
           retention-days: 90
 
-      - name: Upload debug build logs as artifact
+      - name: Collect debug build logs (8MB cap)
         id: export_logs
         run: |
           mkdir -p /tmp/debug_logs
           echo "=== WiskFul Debug Build Log ===" > /tmp/debug_logs/debug_build_log.txt
+          echo "Build: ${{ github.run_id }}" >> /tmp/debug_logs/debug_build_log.txt
           echo "Version: ${{ steps.version.outputs.version }}" >> /tmp/debug_logs/debug_build_log.txt
           echo "Time: $(date -u)" >> /tmp/debug_logs/debug_build_log.txt
           echo "Runner: $(uname -a)" >> /tmp/debug_logs/debug_build_log.txt
-          find android/app/build -name "*.html" -o -name "*.xml" 2>/dev/null | head -20 >> /tmp/debug_logs/debug_build_log.txt || true
+          find android/app/build -type f \( -name "*.html" -o -name "*.xml" \) 2>/dev/null | head -20 >> /tmp/debug_logs/debug_build_log.txt || true
           truncate -s 8M /tmp/debug_logs/debug_build_log.txt 2>/dev/null || true
           echo "log_file=/tmp/debug_logs/debug_build_log.txt" >> "$GITHUB_OUTPUT"
 

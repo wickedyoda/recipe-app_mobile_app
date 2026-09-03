@@ -19,7 +19,7 @@ import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.WindowInsetsControllerCompat
 import androidx.core.view.WindowInsetsCompat
-import androidx.core.view.ViewCompat
+import androidx.core.view.WindowCompat
 import java.io.File
 import java.io.FileWriter
 
@@ -35,6 +35,10 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         window.statusBarColor = android.graphics.Color.parseColor("#0f1115")
         WindowInsetsControllerCompat(window, window.decorView).isAppearanceLightStatusBars = false
+
+        // Use full-screen edge-to-edge so the WebView fills behind the status bar,
+        // then apply padding in launchWebView so content sits BELOW the bar
+        WindowCompat.setDecorFitsSystemWindows(window, false)
 
         AppLog.init(this)
         AppLog.i("App started")
@@ -95,12 +99,6 @@ class MainActivity : AppCompatActivity() {
         setContentView(rootView)
 
         val url = if (host.startsWith("http://") || host.startsWith("https://")) host else "https://$host"
-        // Respect status bar / navigation bar insets — prevent content from being drawn under the top bar
-        ViewCompat.setOnApplyWindowInsetsListener(webView) { view, insets ->
-            val bars = insets.getInsets(WindowInsetsCompat.Type.statusBars() or WindowInsetsCompat.Type.navigationBars())
-            view.setPadding(0, bars.top, 0, bars.bottom)
-            WindowInsetsCompat.CONSUMED
-        }
 
         val ws = webView.settings
         ws.javaScriptEnabled = true

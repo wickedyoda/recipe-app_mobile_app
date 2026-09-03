@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="ic_launcher_foreground">#3DDC84</color>
-    <color name="ic_launcher_background">#0c6160</color>
+    <!-- Dark background color used by the theme -->
+    <color name="background_dark">#0f1115</color>
+    <color name="background_dark_navigation">#0a0c10</color>
 </resources>

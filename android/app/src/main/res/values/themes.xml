@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- Dark theme (primary, replaces light theme) -->
-    <style name="Theme.AppCompat.Light.NoActionBar" parent="Theme.AppCompat.Dark.NoActionBar">
+    <!-- Dark theme as the primary app theme -->
+    <!-- Extends Appcompat's Light.NoActionBar and overrides for dark look -->
+    <style name="Theme.WiskFul" parent="Theme.AppCompat.Light.NoActionBar">
         <item name="android:windowBackground">@color/background_dark</item>
         <item name="android:colorBackground">@color/background_dark</item>
         <item name="android:statusBarColor">@color/background_dark</item>
-        <item name="android:navigationBarColor">@color/background_dark</item>
+        <item name="android:navigationBarColor">@color/background_dark_navigation</item>
         <item name="android:windowLightStatusBar">false</item>
     </style>
 </resources>

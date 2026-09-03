@@ -171,7 +171,7 @@ jobs:
           echo "Time: $(date -u)" >> /tmp/debug_logs/debug_build_log.txt
           echo "Runner: $(uname -a)" >> /tmp/debug_logs/debug_build_log.txt
           find app/build -name "*.html" -o -name "*.xml" 2>/dev/null | head -20 >> /tmp/debug_logs/debug_build_log.txt || true
-          truncate -s 10M /tmp/debug_logs/debug_build_log.txt 2>/dev/null || true
+          truncate -s 8M /tmp/debug_logs/debug_build_log.txt 2>/dev/null || true
           echo "log_file=/tmp/debug_logs/debug_build_log.txt" >> "$GITHUB_OUTPUT"
 
       - name: Upload debug build logs artifact

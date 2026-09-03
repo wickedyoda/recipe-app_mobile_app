@@ -161,7 +161,7 @@ jobs:
           path: ${{ steps.apk.outputs.release }}
           retention-days: 90
 
-      - name: Collect debug build logs (8MB cap)
+      - name: Collect debug build logs (10MB cap)
         id: export_logs
         run: |
           mkdir -p /tmp/debug_logs

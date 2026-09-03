@@ -1,23 +1,23 @@
 <div align="center">
-  <img src="https://github.com/wickedyoda/recipe-app/raw/master/frontend/src/icons/logo-lg.png" alt="WhiskFul logo" width="120" height="120" />
+  <img src="https://github.com/wickedyoda/recipe-app/raw/master/frontend/src/icons/logo-lg.png" alt="WiskFul logo" width="120" height="120" />
 </div>
 
 <div align="center">
 
-## WhiskFul
-
+## WiskFul
 > **Plan it. Cook it. Love it.**
 
 </div>
 
 ## Overview
 
-Android (primary) and iOS clients that wrap the WhiskFul recipe app in a native WebView/SwiftUI shell. Enter a server URL on first launch — it's saved locally — and the app loads the web interface as a native experience.
+Android (primary) client that wraps the WiskFul recipe app in a native WebView shell. Enter a server URL on first launch — it's saved locally — and the app loads the web interface as a native experience.
 
 ## Features
 
-- **Mobile-first**: Android (primary), iOS (secondary) clients
-- **Dark theme** matching the web UI (`#0f1115` background, `#f3f3f3` text)
+- **Mobile-first**: Android client with native WebView shell
+- **Dark theme** matching the web UI (`#0f1115` background)
+- **Edge-to-edge layout**: WebView fills behind status bar, no top padding
 - **Host persistence** — server URL saved locally after first entry
 - **Security hardened**:
   - HTTPS-only via `network-security-config.xml` (Android)
@@ -25,80 +25,110 @@ Android (primary) and iOS clients that wrap the WhiskFul recipe app in a native 
   - `allowFileAccess = false`, `allowContentAccess = false` — file/content access blocked
   - `shouldOverrideUrlLoading` — cross-host navigation restricted
   - WebView debugging disabled
+- **App icons**: Teal (#0c6160) background with logo at all densities (mdpi, hdpi, xhdpi, xxhdpi, xxxhdpi)
 - **Build & publish**: APK auto-built and uploaded on every push to `main` (90-day retention)
 
 ## Quick Start
 
 ### Using the app
 
-1. On first open, enter your WhiskFul server URL (e.g. `https://192.168.1.100:3000`)
+1. On first open, enter your WiskFul server URL (e.g. `https://192.168.1.100:3000`)
 2. Tap **Connect** — the URL is saved locally
 3. The web app loads. On subsequent opens, it loads directly.
 
-### Android (Kotlin + WebView)
+### Building the APK
+
+#### Prerequisites
+- Android SDK 35+
+- JDK 17
+- Android Studio or command-line tools
 
 ```bash
 cd android && ./gradlew assembleDebug
 ```
 
-Debug APK is **auto-built on every push** to `main` via GitHub Actions and attached to a prerelease GitHub Release tagged `apk-{commit-sha}`. Download from: https://github.com/wickedyoda/recipe-app_mobile_app/releases
-
-### iOS (SwiftUI + WKWebView) — paused
-
-iOS development is **temporarily paused**. Android will be the primary mobile client first. The iOS code in `ios/WhiskFul/` is preserved and will be resumed in a future update.
-
-To build iOS later (requires macOS + Xcode 15+):
+**Warning:** Build is workflow_dispatch only — APKs are built via GitHub Actions. Local builds require the release keystore credentials:
 
 ```bash
-open ios/WhiskFul.xcodeproj
+# For signed debug APK (enables upgrade from previous versions)
+SIGNING_STORE_FILE=/path/to/keystore \
+SIGNING_STORE_PASSWORD=*** \
+SIGNING_KEY_ALIAS=release \
+SIGNING_KEY_PASSWORD=*** \
+./gradlew assembleDebug
 ```
 
-Or via EAS (requires Expo / Apple credentials):
+Debug APK is built via GitHub Actions (`workflow_dispatch` only) — find releases at: https://github.com/wickedyoda/recipe-app_mobile_app/releases
 
-```bash
-eas build --platform ios --token $EXPO_TOKEN
-```
+### iOS — Not currently supported
+
+iOS development is **paused**. The iOS code in `ios/WhiskFul/` is preserved but will not be actively developed. Android is the primary mobile client.
 
 ## Project Structure
 
 ```
 recipe-app_mobile_app/
 ├── android/
-│   ├── app/
-│   │   ├── src/main/java/com/whiskful/webview/MainActivity.kt
-│   │   ├── src/main/AndroidManifest.xml
-│   │   └── src/main/res/xml/network_security_config.xml
-│   └── build.gradle
-├── ios/
-│   ├── WhiskFul/           # iOS client (paused — will resume in future)
+│   ├── app/src/main/java/com/whiskful/webview/MainActivity.kt
+│   ├── app/src/main/AndroidManifest.xml
+│   ├── app/src/main/res/values/themes.xml      # Dark theme (#0f1115)
+│   ├── app/src/main/res/values/colors.xml      # Color resources
+│   ├── app/src/main/res/values/strings.xml     # App title, labels
+│   ├── app/src/main/res/mipmap-*/ic_launcher.png  # App icons
+│   └── app/src/main/res/xml/network_security_config.xml
+├── ios/                    # iOS client (paused)
+│   ├── WhiskFul/
 │   │   ├── WhiskFulApp.swift
 │   │   ├── ContentView.swift
 │   │   └── RecipeAppWebView.swift
 │   └── README.md
-
+├── scripts/
+│   └── set_version.py      # Auto-increment version name
+├── security-reports/       # Generated security scan reports
 ├── LICENSE
 └── README.md
 ```
 
 ## Security Checks
 
-
-
 | Check | Tool | Scope | Continue-on-error |
 |-------|------|-------|-------------------|
 | Kotlin Lint | ktlint | Android code style | No |
-| SAST | CodeQL | Kotlin/Java security issues | Yes (no buildable project) |
-| Secrets | TruffleHog | Verified secrets in history | No |
-| Container | Trivy | Filesystem vulnerabilities | No |
-| Assets | Custom | Manifest, network config, iOS files | No |
-| YAML | yamllint | Config file validity | No |
+| Secrets | Manual scan | API keys, credentials | No |
+| WebView Security | Manual | file access, network | No |
+| Signing | Manual | Key rotation required | N/A |
 
-> SAST uses `continue-on-error: true` because CodeQL requires a full compilable Gradle project. The Kotlin source files are raw WebView wrappers. To fully enable SAST, scaffold a proper `build.gradle` with Kotlin DSL in `android/`.
+## GitHub Actions Workflow
 
-## GitHub Packages Export
+The workflow (`mobile-apk-release.yml`) runs:
 
-- **Android APK** → auto-built on every push to `main`, uploaded as a prerelease GitHub Release (90-day retention)
+1. **Version bump**: Computes next alpha version (`alpha-1.0.XX`)
+2. **Java setup**: JDK 17
+3. **Sign keystore**: Optional (from secrets)
+4. **Build APKs**: Debug and Release
+5. **Create Release**: With auto-generated notes
+6. **Upload Artifacts**: 90-day retention
+
+**Manual build only**: Trigger via `workflow_dispatch` on GitHub UI — no push triggers.
+
+## Updating
+
+### Weekly upstream sync (for build tools)
+
+```bash
+git fetch origin
+git rebase origin/main
+```
+
+### For critical dependencies
+
+Check `mobile-security.yml` for security scan configuration.
 
 ## License
 
 MIT — see [LICENSE](LICENSE)
+
+## Security Reports
+
+Past security scans stored in `security-reports/`:
+- `security-scan-YYYY-MM-DD.md` — latest scan results

@@ -65,10 +65,7 @@ android {
             isDebuggable = false
         }
         debug {
-            if (ksStoreFile != null && ksStorePassword != null && ksKeyAlias != null && ksKeyPassword != null
-                && File(ksStoreFile).exists()) {
-                signingConfig = signingConfigs.getByName("debugSigned")
-            }
+            isMinifyEnabled = false
             isDebuggable = true
         }
     }

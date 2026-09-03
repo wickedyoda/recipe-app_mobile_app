@@ -45,7 +45,7 @@ android {
                 keyAlias = ksKeyAlias
                 keyPassword = ksKeyPassword
             }
-            create("debug") {
+            create("debugSigned") {
                 storeFile = File(ksStoreFile)
                 storePassword = ksStorePassword
                 storeType = "pkcs12"
@@ -67,7 +67,7 @@ android {
         debug {
             if (ksStoreFile != null && ksStorePassword != null && ksKeyAlias != null && ksKeyPassword != null
                 && File(ksStoreFile).exists()) {
-                signingConfig = signingConfigs.getByName("debug")
+                signingConfig = signingConfigs.getByName("debugSigned")
             }
             isDebuggable = true
         }

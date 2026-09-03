@@ -1,0 +1,61 @@
+name: Weekly Upstream Sync
+
+on:
+  schedule:
+    # Every Monday at 09:00 UTC
+    - cron: "0 9 * * 1"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  sync:
+    name: Sync with Upstream
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Configure git
+        run: |
+          git config user.name "wickedyoda"
+          git config user.email "jarvis@wickedyoda.local"
+
+      - name: Fetch upstream
+        run: |
+          git remote add upstream https://github.com/NicSparks/breed-scholar.git || true
+          git fetch upstream
+
+      - name: Check for changes
+        id: check
+        run: |
+          UPSTREAM_SHA=$(git rev-parse upstream/main 2>/dev/null || echo "")
+          LOCAL_SHA=$(git rev-parse HEAD 2>/dev/null || echo "")
+          echo "upstream_sha=$UPSTREAM_SHA" >> "$GITHUB_OUTPUT"
+          echo "local_sha=$LOCAL_SHA" >> "$GITHUB_OUTPUT"
+          if [[ "$UPSTREAM_SHA" != "$LOCAL_SHA" ]]; then
+            echo "has_changes=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "has_changes=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Create sync PR
+        if: steps.check.outputs.has_changes == 'true'
+        uses: peter-evans/create-pull-request@v6
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          branch: weekly-sync-upstream
+          commit-message: "sync: weekly upstream update from breed-scholar/main"
+          title: "Weekly upstream sync from breed-scholar/main"
+          body: |
+            ## Weekly Upstream Sync
+            
+            Source: https://github.com/NicSparks/breed-scholar
+            Date: $(date -u +"%Y-%m-%d %H:%M UTC")
+            
+            Found new commits on upstream. Please review and merge.
+          labels: automated, upstream-sync
+          delete-branch: true

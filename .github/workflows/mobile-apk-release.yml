@@ -77,6 +77,10 @@ jobs:
         id: build_debug
         env:
           BUILD_DIR: android
+          SIGNING_STORE_FILE: ${{ env.store_file }}
+          SIGNING_STORE_PASSWORD: ${{ secrets.APK_KEYSTORE_PASSWORD }}
+          SIGNING_KEY_ALIAS: ${{ secrets.APK_KEY_ALIAS }}
+          SIGNING_KEY_PASSWORD: ${{ secrets.APK_KEY_PASSWORD }}
         run: |
           cd $BUILD_DIR
           ./gradlew :app:assembleDebug --no-daemon

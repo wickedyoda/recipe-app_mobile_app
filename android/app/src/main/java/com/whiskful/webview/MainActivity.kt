@@ -181,13 +181,13 @@ class MainActivity : AppCompatActivity() {
         } catch (e: Exception) {
             "unknown"
         }
+        val px16 = (16 * resources.displayMetrics.density).toInt()
+        val bgColor = android.graphics.Color.parseColor("#80000000") // semi-transparent black
         val badge = TextView(this).apply {
             text = "WiskFul $versionName"
             setTextColor(android.graphics.Color.parseColor("#ffffff"))
-            setBackgroundResource(android.R.drawable.bg_popup_window)
-            val px16 = (16 * resources.displayMetrics.density).toInt()
-            val px8 = (8 * resources.displayMetrics.density).toInt()
-            setPadding(px16, px8, px16, px8)
+            setBackgroundColor(bgColor)
+            setPadding(px16, 8, px16, 8)
             textSize = 12f
         }
         val params = FrameLayout.LayoutParams(

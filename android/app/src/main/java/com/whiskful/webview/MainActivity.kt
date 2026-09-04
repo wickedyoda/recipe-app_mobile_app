@@ -6,6 +6,7 @@ import android.net.Uri
 import android.os.Bundle
 import android.os.Environment
 import android.util.Log
+import android.view.Gravity
 import android.view.View
 import android.webkit.ConsoleMessage
 import android.webkit.WebChromeClient
@@ -14,6 +15,7 @@ import android.webkit.WebView
 import android.webkit.WebViewClient
 import android.widget.EditText
 import android.widget.FrameLayout
+import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
@@ -146,6 +148,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         rootView?.let { attachLogFab(it) }
+        attachVersionBadge(rootView)
         webView.loadUrl(url)
     }
 
@@ -169,6 +172,33 @@ class MainActivity : AppCompatActivity() {
             }
         }
         container.addView(fab)
+    }
+
+    private fun attachVersionBadge(container: FrameLayout?) {
+        container ?: return
+        val versionName = try {
+            packageManager.getPackageInfo(packageName, 0).versionName
+        } catch (e: Exception) {
+            "unknown"
+        }
+        val badge = TextView(this).apply {
+            text = "WiskFul $versionName"
+            setTextColor(android.graphics.Color.parseColor("#ffffff"))
+            setBackgroundResource(android.R.drawable.bg_popup_window)
+            val px16 = (16 * resources.displayMetrics.density).toInt()
+            val px8 = (8 * resources.displayMetrics.density).toInt()
+            setPadding(px16, px8, px16, px8)
+            textSize = 12f
+        }
+        val params = FrameLayout.LayoutParams(
+            FrameLayout.LayoutParams.WRAP_CONTENT,
+            FrameLayout.LayoutParams.WRAP_CONTENT
+        ).apply {
+            gravity = Gravity.BOTTOM or Gravity.CENTER_HORIZONTAL
+            bottomMargin = px16
+        }
+        badge.layoutParams = params
+        container.addView(badge)
     }
 
     private fun shareLog() {

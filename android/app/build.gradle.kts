@@ -67,6 +67,8 @@ android {
         debug {
             isMinifyEnabled = false
             isDebuggable = true
+            // Use same signing key as release so debug APK can upgrade release APK without uninstall
+            signingConfig = signingConfigs.getByName("debugSigned")
         }
     }
 }

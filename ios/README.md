@@ -7,25 +7,39 @@ SwiftUI + WKWebView wrapper for the WhiskFul recipe app web interface.
 ```
 ios/
   WhiskFul/
-    WhiskFulApp.swift       # App entry point (@main)
-    ContentView.swift        # Host entry UI + connection state
-    RecipeAppWebView.swift   # WKWebView UIViewRepresentable
+    WhiskFulApp.swift          # App entry point (@main)
+    ContentView.swift          # Host entry UI + connection state
+    RecipeAppWebView.swift     # WKWebView UIViewRepresentable
+    AppLogger.swift            # File logging (10MB cap)
+    Info.plist                 # App info / CSP settings
+    LaunchScreen.storyboard    # Launch screen
+    Assets.xcassets/           # Icons (white logo + coral heart on teal)
+  WhiskFul.xcodeproj/          # Xcode project
+  WhiskFul.xcworkspace/        # Xcode workspace
 ```
+
+## Features (parity with Android)
+
+- Host entry dialog on first launch (UserDefaults/AppStorage)
+- WKWebView with HTTPS-only URL validation
+- External navigation blocking (links open in Safari)
+- Version badge at bottom-center of screen
+- App log file (10MB cap, saved to Documents)
+- Dark theme (teal #0c6160, coral #f55b56)
 
 ## Build
 
 ### Local (macOS + Xcode 15+)
-
 ```bash
-open ios/WhiskFul.xcodeproj
+open ios/WhiskFul.xcworkspace
 ```
+Then press Cmd+R to build and run on simulator or device.
 
-### Cloud Build (CI)
-
-Uses [EAS CLI](https://docs.expo.dev/build/introduction/) (configured in `.github/workflows/mobile-build.yml`):
+### CI/CD
+Builds are manual via [`workflow_dispatch`](.github/workflows/mobile-ipa-release.yml).
 
 ```bash
-eas build --platform ios --token $EXPO_TOKEN
+gh workflow run mobile-ipa-release.yml -R wickedyoda/recipe-app_mobile_app
 ```
 
 On first launch:

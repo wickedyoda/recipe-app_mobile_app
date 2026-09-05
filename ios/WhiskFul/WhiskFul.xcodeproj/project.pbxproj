@@ -1,0 +1,202 @@
+// !$*UTF8@$!
+//
+// WhiskFul.xcodeproj/project.pbxproj
+//
+
+
+{
+	archiveVersion = 1;
+	classes = {};
+	objectVersion = 55;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		5501A2E125272FCD0089A53B /* AppLogger.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5001A2E125272FCD0089A53B /* AppLogger.swift */; };
+		5501A2E225272FCD0089A53B /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5001A2E225272FCD0089A53B /* ContentView.swift */; };
+		5501A2E325272FCD0089A53B /* RecipeAppWebView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5001A2E325272FCD0089A53B /* RecipeAppWebView.swift */; };
+		5501A2E425272FCD0089A53B /* WhiskFulApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5001A2E425272FCD0089A53B /* WhiskFulApp.swift */; };
+		5501A2F425272FCD0089A53B /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 5001A2E625272FCD0089A53B /* LaunchScreen.storyboard */; };
+		5501A30025272FCD0089A53B /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 5001A2E525272FCD0089A53B /* Assets.xcassets */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		5001A2E125272FCD0089A53B /* AppLogger.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.swift; path = AppLogger.swift; sourceTree = "<group>"; };
+		5001A2E225272FCD0089A53B /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		5001A2E325272FCD0089A53B /* RecipeAppWebView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.swift; path = RecipeAppWebView.swift; sourceTree = "<group>"; };
+		5001A2E425272FCD0089A53B /* WhiskFulApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.swift; path = WhiskFulApp.swift; sourceTree = "<group>"; };
+		5001A2E525272FCD0089A53B /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		5001A2E625272FCD0089A53B /* LaunchScreen.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = LaunchScreen.storyboard; sourceTree = "<group>"; };
+		5001A2E725272FCD0089A53B /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		5001A2E825272FCD0089A53B /* WiskFul.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = WiskFul.app; sourceTree = BUILT_PRODUCTS_DIR; };
+/* End PBXFileReference section */
+
+/* Begin PBXGroup section */
+		5001A2E025272FCD0089A53B /* WiskFul */ = {
+			isa = PBXGroup;
+			children = (
+				5001A2E525272FCD0089A53B /* Assets.xcassets */,
+				5001A2E625272FCD0089A53B /* LaunchScreen.storyboard */,
+				5001A2E725272FCD0089A53B /* Info.plist */,
+				5001A2E125272FCD0089A53B /* AppLogger.swift */,
+				5001A2E225272FCD0089A53B /* ContentView.swift */,
+				5001A2E325272FCD0089A53B /* RecipeAppWebView.swift */,
+				5001A2E425272FCD0089A53B /* WhiskFulApp.swift */,
+			);
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		5001A2F025272FCD0089A53B /* WiskFul */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 5001A2FA25272FCD0089A53B /* Build configuration list for WiskFul */;
+			buildPhases = (
+				5001A2F125272FCD0089A53B /* Sources */,
+				5001A2F325272FCD0089A53B /* Frameworks */,
+				5001A2F225272FCD0089A53B /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = WiskFul;
+			productName = WiskFul;
+			productReference = 5001A2E825272FCD0089A53B /* WiskFul.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		5001A2F525272FCD0089A53B /* Project object */ = {
+			isa = PBXProject;
+			buildConfigurationList = 5001A2FB25272FCD0089A53B /* Build configuration list for PBXProject */;
+			compatibilityVersion = "Xcode 14.0";
+			developmentRegion = en;
+			hasScannedPlugins = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = 5001A2E025272FCD0089A53B;
+			productRefGroup = 5001A2E025272FCD0089A53B;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				5001A2F025272FCD0089A53B /* WiskFul */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		5001A2F225272FCD0089A53B /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				5501A2F425272FCD0089A53B /* LaunchScreen.storyboard in Resources */,
+				5501A30025272FCD0089A53B /* Assets.xcassets in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		5001A2F125272FCD0089A53B /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				5501A2E125272FCD0089A53B /* AppLogger.swift in Sources */,
+				5501A2E225272FCD0089A53B /* ContentView.swift in Sources */,
+				5501A2E325272FCD0089A53B /* RecipeAppWebView.swift in Sources */,
+				5501A2E425272FCD0089A53B /* WhiskFulApp.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		5001A2F325272FCD0089A53B /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		5001A2FA25272FCD0089A53B /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchScreen;
+				CLANG_ENABLE_MODULES = YES;
+				INFOPLIST_FILE = "WhiskFul/Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "com.whiskful.recipeapp";
+				PRODUCT_NAME = "WiskFul";
+				SWIFT_VERSION = 5.0;
+			};
+			name = Debug;
+		};
+		5001A2FB25272FCD0089A53B /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchScreen;
+				CLANG_ENABLE_MODULES = YES;
+				INFOPLIST_FILE = "WhiskFul/Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "com.whiskful.recipeapp";
+				PRODUCT_NAME = "WiskFul";
+				SWIFT_VERSION = 5.0;
+			};
+			name = Release;
+		};
+		5001A2FC25272FCD0089A53B /* Project Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_ENABLE_MODULES = YES;
+				ENABLE_BITCODE = NO;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
+				SDKROOT = iphoneos;
+				SWIFT_VERSION = 5.0;
+			};
+			name = Debug;
+		};
+		5001A2FD25272FCD0089A53B /* Project Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_ENABLE_MODULES = YES;
+				ENABLE_BITCODE = NO;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
+				SDKROOT = iphoneos;
+				SWIFT_VERSION = 5.0;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		5001A2FA25272FCD0089A53B /* Build configuration list for WiskFul */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				5001A2FA25272FCD0089A53B /* Debug */,
+				5001A2FB25272FCD0089A53B /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		5001A2FB25272FCD0089A53B /* Build configuration list for PBXProject */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				5001A2FC25272FCD0089A53B /* Project Debug */,
+				5001A2FD25272FCD0089A53B /* Project Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+
+	};
+	rootObject = 5001A2F525272FCD0089A53B /* Project object */;
+}

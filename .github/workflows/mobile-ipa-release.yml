@@ -1,0 +1,50 @@
+name: "iOS IPA Release"
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "Version number (e.g. 1.0.22)"
+        required: false
+        default: ""
+
+jobs:
+  ios-build:
+    name: "Build iOS IPA"
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Select Xcode
+        uses: maxim-lobanov/setup-xcode@v2
+        with:
+          xcode-version: latest-stable
+
+      - name: Build and archive WiskFul
+        run: |
+          xcodebuild \
+            -workspace ios/WhiskFul.xcworkspace \
+            -scheme WiskFul \
+            -configuration Release \
+            -archivePath $PWD/build/WiskFul.xcarchive \
+            -destination "generic/platform=iOS" \
+            clean archive \
+            CODE_SIGN_STYLE=Automatic \
+            -allowProvisioningUpdates
+
+      - name: Export IPA
+        if: always()
+        run: |
+          xcodebuild -exportArchive \
+            -archivePath $PWD/build/WiskFul.xcarchive \
+            -exportPath $PWD/build \
+            -exportOptionsPlist ios/exportOptions.plist \
+            -allowProvisioningUpdates
+
+      - name: Upload IPA artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: wiskful-ios-ipa
+          path: build/WiskFul.ipa
+          retention-days: 30

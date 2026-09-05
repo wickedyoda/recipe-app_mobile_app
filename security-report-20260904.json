@@ -1,0 +1,9 @@
+{
+  "date": "20260904",
+  "repo": "wickedyoda/recipe-app_mobile_app",
+  "secrets_found": false,
+  "permissions_safe": true,
+  "webview_secure": true,
+  "csp_fixed": true,
+  "status": "pass"
+}

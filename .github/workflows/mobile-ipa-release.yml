@@ -23,7 +23,7 @@ jobs:
       - name: Build and archive WiskFul
         run: |
           xcodebuild \
-            -workspace ios/WhiskFul.xcworkspace \
+            -workspace ios/WiskFul.xcworkspace \
             -scheme WiskFul \
             -configuration Release \
             -archivePath $PWD/build/WiskFul.xcarchive \

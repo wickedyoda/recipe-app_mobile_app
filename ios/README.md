@@ -1,21 +1,21 @@
-# WhiskFul iOS Client
+# WiskFul iOS Client
 
-SwiftUI + WKWebView wrapper for the WhiskFul recipe app web interface.
+SwiftUI + WKWebView wrapper for the WiskFul recipe app web interface.
 
 ## Structure
 
 ```
 ios/
-  WhiskFul/
-    WhiskFulApp.swift          # App entry point (@main)
+  WiskFul/
+    WiskFulApp.swift          # App entry point (@main)
     ContentView.swift          # Host entry UI + connection state
     RecipeAppWebView.swift     # WKWebView UIViewRepresentable
     AppLogger.swift            # File logging (10MB cap)
     Info.plist                 # App info / CSP settings
     LaunchScreen.storyboard    # Launch screen
     Assets.xcassets/           # Icons (white logo + coral heart on teal)
-  WhiskFul.xcodeproj/          # Xcode project
-  WhiskFul.xcworkspace/        # Xcode workspace
+  WiskFul.xcodeproj/          # Xcode project
+  WiskFul.xcworkspace/        # Xcode workspace
 ```
 
 ## Features (parity with Android)
@@ -31,7 +31,7 @@ ios/
 
 ### Local (macOS + Xcode 15+)
 ```bash
-open ios/WhiskFul.xcworkspace
+open ios/WiskFul.xcworkspace
 ```
 Then press Cmd+R to build and run on simulator or device.
 
@@ -43,7 +43,7 @@ gh workflow run mobile-ipa-release.yml -R wickedyoda/recipe-app_mobile_app
 ```
 
 On first launch:
-1. Enter your WhiskFul server URL
+1. Enter your WiskFul server URL
 2. Tap **Connect** — URL is saved to `AppStorage`
 3. Web app loads inside `WKWebView`
 

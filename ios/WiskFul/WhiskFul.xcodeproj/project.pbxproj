@@ -1,6 +1,6 @@
 // !$*UTF8@$!
 //
-// WhiskFul.xcodeproj/project.pbxproj
+// WiskFul.xcodeproj/project.pbxproj
 //
 
 
@@ -14,7 +14,7 @@
 		5501A2E125272FCD0089A53B /* AppLogger.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5001A2E125272FCD0089A53B /* AppLogger.swift */; };
 		5501A2E225272FCD0089A53B /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5001A2E225272FCD0089A53B /* ContentView.swift */; };
 		5501A2E325272FCD0089A53B /* RecipeAppWebView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5001A2E325272FCD0089A53B /* RecipeAppWebView.swift */; };
-		5501A2E425272FCD0089A53B /* WhiskFulApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5001A2E425272FCD0089A53B /* WhiskFulApp.swift */; };
+		5501A2E425272FCD0089A53B /* WiskFulApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5001A2E425272FCD0089A53B /* WiskFulApp.swift */; };
 		5501A2F425272FCD0089A53B /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 5001A2E625272FCD0089A53B /* LaunchScreen.storyboard */; };
 		5501A30025272FCD0089A53B /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 5001A2E525272FCD0089A53B /* Assets.xcassets */; };
 /* End PBXBuildFile section */
@@ -23,7 +23,7 @@
 		5001A2E125272FCD0089A53B /* AppLogger.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.swift; path = AppLogger.swift; sourceTree = "<group>"; };
 		5001A2E225272FCD0089A53B /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		5001A2E325272FCD0089A53B /* RecipeAppWebView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.swift; path = RecipeAppWebView.swift; sourceTree = "<group>"; };
-		5001A2E425272FCD0089A53B /* WhiskFulApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.swift; path = WhiskFulApp.swift; sourceTree = "<group>"; };
+		5001A2E425272FCD0089A53B /* WiskFulApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.swift; path = WiskFulApp.swift; sourceTree = "<group>"; };
 		5001A2E525272FCD0089A53B /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		5001A2E625272FCD0089A53B /* LaunchScreen.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = LaunchScreen.storyboard; sourceTree = "<group>"; };
 		5001A2E725272FCD0089A53B /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -40,7 +40,7 @@
 				5001A2E125272FCD0089A53B /* AppLogger.swift */,
 				5001A2E225272FCD0089A53B /* ContentView.swift */,
 				5001A2E325272FCD0089A53B /* RecipeAppWebView.swift */,
-				5001A2E425272FCD0089A53B /* WhiskFulApp.swift */,
+				5001A2E425272FCD0089A53B /* WiskFulApp.swift */,
 			);
 			sourceTree = "<group>";
 		};
@@ -107,7 +107,7 @@
 				5501A2E125272FCD0089A53B /* AppLogger.swift in Sources */,
 				5501A2E225272FCD0089A53B /* ContentView.swift in Sources */,
 				5501A2E325272FCD0089A53B /* RecipeAppWebView.swift in Sources */,
-				5501A2E425272FCD0089A53B /* WhiskFulApp.swift in Sources */,
+				5501A2E425272FCD0089A53B /* WiskFulApp.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -130,7 +130,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchScreen;
 				CLANG_ENABLE_MODULES = YES;
-				INFOPLIST_FILE = "WhiskFul/Info.plist";
+				INFOPLIST_FILE = "WiskFul/Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.whiskful.recipeapp";
 				PRODUCT_NAME = "WiskFul";
@@ -144,7 +144,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchScreen;
 				CLANG_ENABLE_MODULES = YES;
-				INFOPLIST_FILE = "WhiskFul/Info.plist";
+				INFOPLIST_FILE = "WiskFul/Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.whiskful.recipeapp";
 				PRODUCT_NAME = "WiskFul";

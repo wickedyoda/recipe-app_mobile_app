@@ -56,9 +56,9 @@ jobs:
 
       - name: Validate iOS files
         run: |
-          test -f ios/WhiskFul/WhiskFulApp.swift
-          test -f ios/WhiskFul/ContentView.swift
-          test -f ios/WhiskFul/RecipeAppWebView.swift
+          test -f ios/WiskFul/WiskFulApp.swift
+          test -f ios/WiskFul/ContentView.swift
+          test -f ios/WiskFul/RecipeAppWebView.swift
 
       - name: Validate Android WebView security
         run: |

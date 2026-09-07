@@ -62,7 +62,7 @@ Debug APK is built via GitHub Actions (`workflow_dispatch` only) — find releas
 
 ### iOS — Not currently supported
 
-iOS development is **paused**. The iOS code in `ios/WhiskFul/` is preserved but will not be actively developed. Android is the primary mobile client.
+iOS development is **paused**. The iOS code in `ios/WiskFul/` is preserved but will not be actively developed. Android is the primary mobile client.
 
 ## Project Structure
 
@@ -77,8 +77,8 @@ recipe-app_mobile_app/
 │   ├── app/src/main/res/mipmap-*/ic_launcher.png  # App icons
 │   └── app/src/main/res/xml/network_security_config.xml
 ├── ios/                    # iOS client (paused)
-│   ├── WhiskFul/
-│   │   ├── WhiskFulApp.swift
+│   ├── WiskFul/
+│   │   ├── WiskFulApp.swift
 │   │   ├── ContentView.swift
 │   │   └── RecipeAppWebView.swift
 │   └── README.md

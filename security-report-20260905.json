@@ -1,0 +1,34 @@
+{
+  "scan_type": "complete_security_scan",
+  "repo": "wickedyoda/recipe-app_mobile_app",
+  "branch": "main",
+  "commit": "",
+  "scanned_at": "2026-09-05T00:31:14.428621",
+  "findings": {
+    "secrets": {
+      "status": "clean",
+      "details": "No hardcoded secrets, tokens, API keys, or credentials found in source files"
+    },
+    "webview_security": {
+      "status": "informational",
+      "details": "JavaScript enabled in WebView (required for web app functionality). File access disabled (allowFileAccess=false). Universal access disabled (allowUniversalAccessFromFileURLs=false)."
+    },
+    "dependencies": {
+      "status": "clean",
+      "details": "androidx.appcompat:1.7.0, androidx.core:core-ktx:1.13.1 \u2014 both current, no known CVEs"
+    },
+    "file_permissions": {
+      "status": "informational",
+      "details": "All files at standard 644/755 \u2014 no overly permissive files (777)"
+    },
+    "ios_plist": {
+      "status": "review_needed",
+      "details": "NSAllowsArbitraryLoads=true in Info.plist \u2014 ATS disabled. This allows the web app to load HTTP resources. Should be tightened with NSExceptionDomains for specific hosts only, or removed if only HTTPS is used.",
+      "severity": "medium"
+    },
+    "false_positives": [
+      "Password in URL flags \u2014 all are example text (https://192.168.1.100:3000) not real credentials"
+    ]
+  },
+  "summary": "No secrets found. No high-risk vulnerabilities. One medium: iOS ATS disabled \u2014 should use NSExceptionDomains instead of NSAllowsArbitraryLoads=true."
+}

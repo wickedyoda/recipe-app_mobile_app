@@ -20,13 +20,13 @@ jobs:
         with:
           xcode-version: latest-stable
 
-      - name: Build and archive WiskFul
+      - name: Build and archive WhiskFul
         run: |
           xcodebuild \
             -workspace ios/WhiskFul.xcworkspace \
-            -scheme WiskFul \
+            -scheme WhiskFul \
             -configuration Release \
-            -archivePath $PWD/build/WiskFul.xcarchive \
+            -archivePath $PWD/build/WhiskFul.xcarchive \
             -destination "generic/platform=iOS" \
             clean archive \
             CODE_SIGN_STYLE=Automatic \
@@ -36,7 +36,7 @@ jobs:
         if: always()
         run: |
           xcodebuild -exportArchive \
-            -archivePath $PWD/build/WiskFul.xcarchive \
+            -archivePath $PWD/build/WhiskFul.xcarchive \
             -exportPath $PWD/build \
             -exportOptionsPlist ios/exportOptions.plist \
             -allowProvisioningUpdates
@@ -46,5 +46,5 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: wiskful-ios-ipa
-          path: build/WiskFul.ipa
+          path: build/WhiskFul.ipa
           retention-days: 30

@@ -6,8 +6,8 @@
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
-        android:label="WiskFul"
-        android:theme="@style/Theme.WiskFul"
+        android:label="WhiskFul"
+        android:theme="@style/Theme.WhiskFul"
         android:usesCleartextTraffic="false">
         <activity
             android:name=".MainActivity"

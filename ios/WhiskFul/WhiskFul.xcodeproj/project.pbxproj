@@ -27,11 +27,11 @@
 		5001A2E525272FCD0089A53B /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		5001A2E625272FCD0089A53B /* LaunchScreen.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = LaunchScreen.storyboard; sourceTree = "<group>"; };
 		5001A2E725272FCD0089A53B /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		5001A2E825272FCD0089A53B /* WiskFul.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = WiskFul.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		5001A2E825272FCD0089A53B /* WhiskFul.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = WhiskFul.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXGroup section */
-		5001A2E025272FCD0089A53B /* WiskFul */ = {
+		5001A2E025272FCD0089A53B /* WhiskFul */ = {
 			isa = PBXGroup;
 			children = (
 				5001A2E525272FCD0089A53B /* Assets.xcassets */,
@@ -47,9 +47,9 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		5001A2F025272FCD0089A53B /* WiskFul */ = {
+		5001A2F025272FCD0089A53B /* WhiskFul */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 5001A2FA25272FCD0089A53B /* Build configuration list for WiskFul */;
+			buildConfigurationList = 5001A2FA25272FCD0089A53B /* Build configuration list for WhiskFul */;
 			buildPhases = (
 				5001A2F125272FCD0089A53B /* Sources */,
 				5001A2F325272FCD0089A53B /* Frameworks */,
@@ -59,9 +59,9 @@
 			);
 			dependencies = (
 			);
-			name = WiskFul;
-			productName = WiskFul;
-			productReference = 5001A2E825272FCD0089A53B /* WiskFul.app */;
+			name = WhiskFul;
+			productName = WhiskFul;
+			productReference = 5001A2E825272FCD0089A53B /* WhiskFul.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
@@ -82,7 +82,7 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				5001A2F025272FCD0089A53B /* WiskFul */,
+				5001A2F025272FCD0089A53B /* WhiskFul */,
 			);
 		};
 /* End PBXProject section */
@@ -133,7 +133,7 @@
 				INFOPLIST_FILE = "WhiskFul/Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.whiskful.recipeapp";
-				PRODUCT_NAME = "WiskFul";
+				PRODUCT_NAME = "WhiskFul";
 				SWIFT_VERSION = 5.0;
 			};
 			name = Debug;
@@ -147,7 +147,7 @@
 				INFOPLIST_FILE = "WhiskFul/Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.whiskful.recipeapp";
-				PRODUCT_NAME = "WiskFul";
+				PRODUCT_NAME = "WhiskFul";
 				SWIFT_VERSION = 5.0;
 			};
 			name = Release;
@@ -177,7 +177,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		5001A2FA25272FCD0089A53B /* Build configuration list for WiskFul */ = {
+		5001A2FA25272FCD0089A53B /* Build configuration list for WhiskFul */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				5001A2FA25272FCD0089A53B /* Debug */,

@@ -22,16 +22,26 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.WindowInsetsControllerCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowCompat
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import okhttp3.OkHttpClient
+import okhttp3.Request
+import okhttp3.RequestBody
+import okhttp3.MediaType.Companion.toMediaType
+import org.json.JSONObject
 import java.io.File
 import java.io.FileWriter
 
 private const val PREFS_NAME = "host_prefs"
 private const val KEY_HOST = "host_name"
-private const val TAG = "WiskFul"
+private const val TAG = "WhiskFul"
 
 class MainActivity : AppCompatActivity() {
     private lateinit var urlInput: EditText
     private var rootView: FrameLayout? = null
+    private val okHttpClient = OkHttpClient()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -155,8 +165,9 @@ class MainActivity : AppCompatActivity() {
     private fun attachLogFab(container: FrameLayout) {
         val fab = android.widget.Button(this).apply {
             text = "Logs"
+            textSize = 11f
             alpha = 0.85f
-            val px = (16 * resources.displayMetrics.density).toInt()
+            val px = (10 * resources.displayMetrics.density).toInt()
             val params = FrameLayout.LayoutParams(
                 FrameLayout.LayoutParams.WRAP_CONTENT,
                 FrameLayout.LayoutParams.WRAP_CONTENT
@@ -166,12 +177,85 @@ class MainActivity : AppCompatActivity() {
                 gravity = android.view.Gravity.END or android.view.Gravity.BOTTOM
             }
             layoutParams = params
-            setPadding(px, (px / 2), px, (px / 2))
+            setPadding(px, (px / 3), px, (px / 3))
             setOnClickListener {
-                shareLog()
+                showLogSendDialog()
             }
         }
         container.addView(fab)
+    }
+
+    private fun showLogSendDialog() {
+        AlertDialog.Builder(this)
+            .setTitle("Send Logs")
+            .setMessage("How would you like to send the logs?")
+            .setPositiveButton("Via Host (recipe.tyates.one)") { _, _ ->
+                sendLogToHostServer()
+            }
+            .setNeutralButton("Via Email App") { _, _ ->
+                shareLog()
+            }
+            .setNegativeButton("Cancel", null)
+            .show()
+    }
+
+    private fun sendLogToHostServer() {
+        val prefs = getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+        val host = prefs.getString(KEY_HOST, "").orEmpty()
+        if (host.isEmpty()) {
+            Toast.makeText(this, "No server configured", Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        val logFile = AppLog.getLogFile()
+        if (logFile == null || !logFile.exists()) {
+            Toast.makeText(this, "No log file yet", Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        val logContent = logFile.readText()
+        val versionName = try {
+            packageManager.getPackageInfo(packageName, 0).versionName
+        } catch (e: Exception) { "unknown" }
+
+        Toast.makeText(this, "Sending logs to host server…", Toast.LENGTH_SHORT).show()
+
+        CoroutineScope(Dispatchers.IO).launch {
+            try {
+                val subject = "WhiskFul Diag Logs ${java.text.SimpleDateFormat("yyyy-MM-dd HH-mm-ss").format(java.util.Date())}"
+                val body = "Diagnostic logs from WhiskFul $versionName ($host)"
+                val fullBody = "$body\n\n--- Log Content ---\n$logContent"
+
+                val jsonObj = JSONObject().apply {
+                    put("subject", subject)
+                    put("body", fullBody)
+                }.toString()
+                val mediaType = "application/json".toMediaType()
+                val requestBody = RequestBody.create(mediaType, jsonObj)
+                val request = Request.Builder()
+                    .url("$host/logs/submit")
+                    .post(requestBody)
+                    .build()
+
+                val response = okHttpClient.newCall(request).execute()
+                val success = response.isSuccessful
+
+                withContext(Dispatchers.Main) {
+                    if (success) {
+                        Toast.makeText(this@MainActivity, "Logs sent successfully!", Toast.LENGTH_LONG).show()
+                        AppLog.i("Logs posted to host server successfully")
+                    } else {
+                        Toast.makeText(this@MainActivity, "Failed to send logs: HTTP ${response.code}", Toast.LENGTH_LONG).show()
+                        AppLog.e("Log submission failed: HTTP ${response.code}")
+                    }
+                }
+            } catch (e: Exception) {
+                withContext(Dispatchers.Main) {
+                    Toast.makeText(this@MainActivity, "Error: ${e.message}", Toast.LENGTH_LONG).show()
+                    AppLog.e("Log send error: ${e.message}")
+                }
+            }
+        }
     }
 
     private fun attachVersionBadge(container: FrameLayout?) {
@@ -184,7 +268,7 @@ class MainActivity : AppCompatActivity() {
         val px16 = (16 * resources.displayMetrics.density).toInt()
         val bgColor = android.graphics.Color.parseColor("#80000000") // semi-transparent black
         val badge = TextView(this).apply {
-            text = "WiskFul $versionName"
+            text = "WhiskFul $versionName"
             setTextColor(android.graphics.Color.parseColor("#ffffff"))
             setBackgroundColor(bgColor)
             setPadding(px16, 8, px16, 8)
@@ -218,7 +302,7 @@ class MainActivity : AppCompatActivity() {
                 putExtra(android.content.Intent.EXTRA_STREAM, uri)
                 addFlags(android.content.Intent.FLAG_GRANT_READ_URI_PERMISSION)
             }
-            startActivity(android.content.Intent.createChooser(intent, "Share WiskFul logs"))
+            startActivity(android.content.Intent.createChooser(intent, "Share WhiskFul logs"))
             AppLog.i("Shared log file=${logFile.absolutePath} size=${logFile.length()}")
         } catch (e: Exception) {
             Log.e(TAG, "Failed to share logs", e)

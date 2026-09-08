@@ -1,17 +1,17 @@
 <div align="center">
-  <img src="https://github.com/wickedyoda/recipe-app/raw/master/frontend/src/icons/logo-lg.png" alt="WiskFul logo" width="120" height="120" />
+  <img src="https://github.com/wickedyoda/recipe-app/raw/master/frontend/src/icons/logo-lg.png" alt="WhiskFul logo" width="120" height="120" />
 </div>
 
 <div align="center">
 
-## WiskFul
+## WhiskFul
 > **Plan it. Cook it. Love it.**
 
 </div>
 
 ## Overview
 
-Android (primary) client that wraps the WiskFul recipe app in a native WebView shell. Enter a server URL on first launch — it's saved locally — and the app loads the web interface as a native experience.
+Android (primary) client that wraps the WhiskFul recipe app in a native WebView shell. Enter a server URL on first launch — it's saved locally — and the app loads the web interface as a native experience.
 
 ## Features
 
@@ -32,7 +32,7 @@ Android (primary) client that wraps the WiskFul recipe app in a native WebView s
 
 ### Using the app
 
-1. On first open, enter your WiskFul server URL (e.g. `https://192.168.1.100:3000`)
+1. On first open, enter your WhiskFul server URL (e.g. `https://192.168.1.100:3000`)
 2. Tap **Connect** — the URL is saved locally
 3. The web app loads. On subsequent opens, it loads directly.
 

@@ -22,6 +22,15 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.WindowInsetsControllerCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowCompat
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import okhttp3.OkHttpClient
+import okhttp3.Request
+import okhttp3.RequestBody
+import okhttp3.MediaType.Companion.toMediaType
+import org.json.JSONObject
 import java.io.File
 import java.io.FileWriter
 
@@ -29,11 +38,10 @@ private const val PREFS_NAME = "host_prefs"
 private const val KEY_HOST = "host_name"
 private const val TAG = "WhiskFul"
 
-import com.whiskful.webview.network.SmtpConfig
-
 class MainActivity : AppCompatActivity() {
     private lateinit var urlInput: EditText
     private var rootView: FrameLayout? = null
+    private val okHttpClient = OkHttpClient()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -155,20 +163,21 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun attachLogFab(container: FrameLayout) {
+        val px = (10 * resources.displayMetrics.density).toInt()
         val fab = android.widget.Button(this).apply {
             text = "Logs"
+            textSize = 11f
             alpha = 0.85f
-            val px = (16 * resources.displayMetrics.density).toInt()
             val params = FrameLayout.LayoutParams(
                 FrameLayout.LayoutParams.WRAP_CONTENT,
                 FrameLayout.LayoutParams.WRAP_CONTENT
             ).apply {
                 marginEnd = px
                 bottomMargin = px
-                gravity = android.view.Gravity.END or android.view.Gravity.BOTTOM
+                gravity = Gravity.END or Gravity.BOTTOM
             }
             layoutParams = params
-            setPadding(px, (px / 2), px, (px / 2))
+            setPadding(px, (px / 3), px, (px / 3))
             setOnClickListener {
                 showLogActionDialog()
             }
@@ -177,61 +186,90 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun showLogActionDialog() {
+        val prefs = getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+        val host = prefs.getString(KEY_HOST, "").orEmpty()
         AlertDialog.Builder(this)
             .setTitle("Send Logs")
-            .setMessage("How would you like to send the support log?")
-            .setPositiveButton("Via Email App") { _, _ ->
-                shareLog()
+            .setMessage("How would you like to send the logs?")
+            .setPositiveButton("Via Host ($host)") { _, _ ->
+                if (host.isNotEmpty()) {
+                    sendLogToHostServer()
+                } else {
+                    Toast.makeText(this, "Server not configured", Toast.LENGTH_SHORT).show()
+                }
             }
-            .setNeutralButton("Via SMTP") { _, _ ->
-                sendSupportLogViaSmtp()
+            .setNeutralButton("Via Email App") { _, _ ->
+                shareLog()
             }
             .setNegativeButton("Cancel", null)
             .show()
     }
 
-    private fun sendSupportLogViaSmtp() {
+    private fun sendLogToHostServer() {
+        val prefs = getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+        val host = prefs.getString(KEY_HOST, "").orEmpty()
+        if (host.isEmpty()) {
+            Toast.makeText(this, "No server configured", Toast.LENGTH_SHORT).show()
+            return
+        }
+
         val logFile = AppLog.getLogFile()
         if (logFile == null || !logFile.exists()) {
             Toast.makeText(this, "No log file yet", Toast.LENGTH_SHORT).show()
             return
         }
-        // Note: recipes@tyates.one is send-only and restricted to alerts@tyates.one
-        val logContent = logFile.readText().take(5000)
-        Toast.makeText(this, "Sending log via SMTP (recipes@ → alerts@)…", Toast.LENGTH_SHORT).show()
-        Thread {
+
+        val logContent = logFile.readText()
+        val versionName = try {
+            packageManager.getPackageInfo(packageName, 0).versionName
+        } catch (e: Exception) { "unknown" }
+
+        Toast.makeText(this, "Sending logs to host server…", Toast.LENGTH_SHORT).show()
+
+        CoroutineScope(Dispatchers.IO).launch {
             try {
-                val versionName = try {
-                    packageManager.getPackageInfo(packageName, 0).versionName
-                } catch (e: Exception) { "unknown" }
-                val subject = "WhiskFul Support Log — alpha-$versionName"
-                val body = "Support log from WhiskFul alpha-$versionName. Device: ${android.os.Build.MODEL}"
-                val success = SmtpConfig.sendSupportLog(
-                    subject = subject,
-                    body = body,
-                    logContent = logContent
-                )
-                if (success) {
-                    Toast.makeText(this, "Log sent to alerts@tyates.one!", Toast.LENGTH_LONG).show()
-                    AppLog.i("SMTP support log sent successfully")
-                } else {
-                    Toast.makeText(this, "Failed to send log. Check credentials/network.", Toast.LENGTH_LONG).show()
-                    AppLog.e("SMTP support log failed to send")
+                val subject = "WhiskFul Diag Logs ${java.text.SimpleDateFormat("yyyy-MM-dd HH-mm-ss").format(java.util.Date())}"
+                val body = "Diagnostic logs from WhiskFul $versionName ($host)"
+                val fullBody = "$body\n\n--- Log Content ---\n$logContent"
+
+                val jsonObj = JSONObject().apply {
+                    put("subject", subject)
+                    put("body", fullBody)
+                }.toString()
+
+                val mediaType = "application/json".toMediaType()
+                val requestBody = jsonObj.toRequestBody(mediaType)
+                val request = Request.Builder()
+                    .url("$host/logs/submit")
+                    .post(requestBody)
+                    .build()
+
+                val response = okHttpClient.newCall(request).execute()
+                val success = response.isSuccessful
+
+                withContext(Dispatchers.Main) {
+                    if (success) {
+                        Toast.makeText(this@MainActivity, "Logs sent successfully!", Toast.LENGTH_LONG).show()
+                        AppLog.i("Logs posted to host server successfully")
+                    } else {
+                        Toast.makeText(this@MainActivity, "Failed to send logs: HTTP ${response.code}", Toast.LENGTH_LONG).show()
+                        AppLog.e("Log submission failed: HTTP ${response.code}")
+                    }
                 }
             } catch (e: Exception) {
-                Toast.makeText(this, "Error: ${e.message}", Toast.LENGTH_LONG).show()
-                AppLog.e("SMTP send error: ${e.message}")
+                withContext(Dispatchers.Main) {
+                    Toast.makeText(this@MainActivity, "Error: ${e.message}", Toast.LENGTH_LONG).show()
+                    AppLog.e("Log send error: ${e.message}")
+                }
             }
-        }.start()
+        }
     }
 
     private fun attachVersionBadge(container: FrameLayout?) {
         container ?: return
         val versionName = try {
             packageManager.getPackageInfo(packageName, 0).versionName
-        } catch (e: Exception) {
-            "unknown"
-        }
+        } catch (e: Exception) { "unknown" }
         val px16 = (16 * resources.displayMetrics.density).toInt()
         val bgColor = android.graphics.Color.parseColor("#80000000") // semi-transparent black
         val badge = TextView(this).apply {

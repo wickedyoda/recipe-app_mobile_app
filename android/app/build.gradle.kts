@@ -15,7 +15,7 @@ android {
         minSdk = 21
         targetSdk = 35
         versionCode = 1
-        versionName = "alpha-1.0.21"
+        versionName = "alpha-1.0.24"
     }
 
     compileOptions {
@@ -63,16 +63,12 @@ android {
             }
             isMinifyEnabled = false
             isDebuggable = false
-            buildConfigField("String", "SMTP_PASSWORD", "\"${System.getenv("SMTP_PASSWORD") ?: ""}\"")
-            buildConfigField("String", "SMTP_USER", "\"recipes@tyates.one\"")
         }
         debug {
             isMinifyEnabled = false
             isDebuggable = true
             // Use same signing key as release so debug APK can upgrade release APK without uninstall
             signingConfig = signingConfigs.getByName("debugSigned")
-            buildConfigField("String", "SMTP_PASSWORD", "\"${System.getenv("SMTP_PASSWORD") ?: ""}\"")
-            buildConfigField("String", "SMTP_USER", "\"recipes@tyates.one\"")
         }
     }
 }
@@ -80,6 +76,5 @@ android {
 dependencies {
     implementation("androidx.appcompat:appcompat:1.7.0")
     implementation("androidx.core:core-ktx:1.13.1")
-    implementation("com.sun.mail:android-mail:1.6.7")
-    implementation("com.sun.mail:android-activation:1.6.7")
+    implementation("com.squareup.okhttp3:okhttp:4.12.0")
 }

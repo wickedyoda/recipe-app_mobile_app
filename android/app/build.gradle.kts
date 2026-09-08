@@ -57,8 +57,9 @@ android {
 
     buildTypes {
         release {
-            if (ksStoreFile != null && ksStorePassword != null && ksKeyAlias != null && ksKeyPassword != null
-                && File(ksStoreFile).exists()) {
+            if (!ksStoreFile.isNullOrEmpty() && !ksStorePassword.isNullOrEmpty() &&
+                !ksKeyAlias.isNullOrEmpty() && !ksKeyPassword.isNullOrEmpty() &&
+                File(ksStoreFile).exists()) {
                 signingConfig = signingConfigs.getByName("release")
             }
             isMinifyEnabled = false
@@ -67,8 +68,11 @@ android {
         debug {
             isMinifyEnabled = false
             isDebuggable = true
-            // Use same signing key as release so debug APK can upgrade release APK without uninstall
-            signingConfig = signingConfigs.getByName("debugSigned")
+            if (!ksStoreFile.isNullOrEmpty() && !ksStorePassword.isNullOrEmpty() &&
+                !ksKeyAlias.isNullOrEmpty() && !ksKeyPassword.isNullOrEmpty() &&
+                File(ksStoreFile).exists()) {
+                signingConfig = signingConfigs.getByName("debugSigned")
+            }
         }
     }
 }

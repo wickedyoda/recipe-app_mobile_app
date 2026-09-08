@@ -238,7 +238,7 @@ class MainActivity : AppCompatActivity() {
                 }.toString()
 
                 val mediaType = "application/json".toMediaType()
-                val requestBody = jsonObj.toRequestBody(mediaType)
+                val requestBody = RequestBody.create(mediaType, jsonObj)
                 val request = Request.Builder()
                     .url("$host/logs/submit")
                     .post(requestBody)

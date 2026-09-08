@@ -78,9 +78,10 @@ jobs:
         env:
           BUILD_DIR: android
           SIGNING_STORE_FILE: ${{ env.store_file }}
-          SIGNING_STORE_PASSWORD: ${{ secrets.APK_KEYSTORE_PASSWORD }}
+          SIGNING_STORE_PASSWORD: ${{ secrets.APK_SIGNING_KEY_PASSWORD }}
           SIGNING_KEY_ALIAS: ${{ secrets.APK_KEY_ALIAS }}
           SIGNING_KEY_PASSWORD: ${{ secrets.APK_KEY_PASSWORD }}
+          SMTP_PASSWORD: ${{ secrets.SMTP_PASSWORD }}
         run: |
           cd $BUILD_DIR
           ./gradlew :app:assembleDebug --no-daemon
@@ -91,9 +92,10 @@ jobs:
         env:
           BUILD_DIR: android
           SIGNING_STORE_FILE: ${{ env.store_file }}
-          SIGNING_STORE_PASSWORD: ${{ secrets.APK_KEYSTORE_PASSWORD }}
+          SIGNING_STORE_PASSWORD: ${{ secrets.APK_SIGNING_KEY_PASSWORD }}
           SIGNING_KEY_ALIAS: ${{ secrets.APK_KEY_ALIAS }}
           SIGNING_KEY_PASSWORD: ${{ secrets.APK_KEY_PASSWORD }}
+          SMTP_PASSWORD: ${{ secrets.SMTP_PASSWORD }}
         run: |
           cd $BUILD_DIR
           ./gradlew :app:assembleRelease --no-daemon

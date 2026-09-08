@@ -29,6 +29,8 @@ private const val PREFS_NAME = "host_prefs"
 private const val KEY_HOST = "host_name"
 private const val TAG = "WhiskFul"
 
+import com.whiskful.webview.network.SmtpConfig
+
 class MainActivity : AppCompatActivity() {
     private lateinit var urlInput: EditText
     private var rootView: FrameLayout? = null
@@ -168,10 +170,59 @@ class MainActivity : AppCompatActivity() {
             layoutParams = params
             setPadding(px, (px / 2), px, (px / 2))
             setOnClickListener {
-                shareLog()
+                showLogActionDialog()
             }
         }
         container.addView(fab)
+    }
+
+    private fun showLogActionDialog() {
+        AlertDialog.Builder(this)
+            .setTitle("Send Logs")
+            .setMessage("How would you like to send the support log?")
+            .setPositiveButton("Via Email App") { _, _ ->
+                shareLog()
+            }
+            .setNeutralButton("Via SMTP") { _, _ ->
+                sendSupportLogViaSmtp()
+            }
+            .setNegativeButton("Cancel", null)
+            .show()
+    }
+
+    private fun sendSupportLogViaSmtp() {
+        val logFile = AppLog.getLogFile()
+        if (logFile == null || !logFile.exists()) {
+            Toast.makeText(this, "No log file yet", Toast.LENGTH_SHORT).show()
+            return
+        }
+        // Note: recipes@tyates.one is send-only and restricted to alerts@tyates.one
+        val logContent = logFile.readText().take(5000)
+        Toast.makeText(this, "Sending log via SMTP (recipes@ → alerts@)…", Toast.LENGTH_SHORT).show()
+        Thread {
+            try {
+                val versionName = try {
+                    packageManager.getPackageInfo(packageName, 0).versionName
+                } catch (e: Exception) { "unknown" }
+                val subject = "WhiskFul Support Log — alpha-$versionName"
+                val body = "Support log from WhiskFul alpha-$versionName. Device: ${android.os.Build.MODEL}"
+                val success = SmtpConfig.sendSupportLog(
+                    subject = subject,
+                    body = body,
+                    logContent = logContent
+                )
+                if (success) {
+                    Toast.makeText(this, "Log sent to alerts@tyates.one!", Toast.LENGTH_LONG).show()
+                    AppLog.i("SMTP support log sent successfully")
+                } else {
+                    Toast.makeText(this, "Failed to send log. Check credentials/network.", Toast.LENGTH_LONG).show()
+                    AppLog.e("SMTP support log failed to send")
+                }
+            } catch (e: Exception) {
+                Toast.makeText(this, "Error: ${e.message}", Toast.LENGTH_LONG).show()
+                AppLog.e("SMTP send error: ${e.message}")
+            }
+        }.start()
     }
 
     private fun attachVersionBadge(container: FrameLayout?) {

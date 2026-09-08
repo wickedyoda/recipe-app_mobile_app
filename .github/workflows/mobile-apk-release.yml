@@ -17,28 +17,6 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Compute next alpha patch version
-        id: version
-        run: |
-          set -e
-          # Extract patch number from existing tags (alpha-1.0.XX)
-          latest=$(gh release list --repo ${{ github.repository }} --limit 100 --json tagName --jq '.[].tagName' | grep '^alpha-1\.0\.' | sort -V | tail -1)
-          if [[ "$latest" =~ ^alpha-1\.0\.([0-9]+)$ ]]; then
-            next=$(( 10#${BASH_REMATCH[1]} + 1 ))
-          else
-            # Start at 04 as instructed by user
-            next=4
-          fi
-          # Ensure next >= 4 (don't go backwards)
-          if [[ "$next" -lt 4 ]]; then
-            next=4
-          fi
-          ver="alpha-1.0.$(printf '%02d' "$next")"
-          echo "version=$ver" >> "$GITHUB_OUTPUT"
-          echo "tag=$ver" >> "$GITHUB_OUTPUT"
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
       - name: Set up JDK 17
         uses: actions/setup-java@v5
         with:
@@ -48,11 +26,22 @@ jobs:
       - name: Install Android SDK
         uses: android-actions/setup-android@v4
 
-      - name: Set version name
+      - name: Compute next AD alpha patch version
+        id: version
         run: |
-          cp scripts/set_version.py android/
-          python3 android/set_version.py "${{ steps.version.outputs.version }}" android/app/build.gradle.kts
-          grep "versionName" android/app/build.gradle.kts
+          set -e
+          latest=$(gh release list --repo ${{ github.repository }} --limit 200 --json tagName --jq '.[].tagName' | grep '^WhiskFul-alpha-AD-1\.0\.' | sort -V | tail -1)
+          if [[ "$latest" =~ ^WhiskFul-alpha-AD-1\.0\.([0-9]+)$ ]]; then
+            next=$(( 10#${BASH_REMATCH[1]} + 1 ))
+          else
+            # Fallback: start at 26 as instructed by user (continues after 25)
+            next=26
+          fi
+          ver="1.0.$(printf '%02d' "$next")"
+          echo "version=$ver" >> "$GITHUB_OUTPUT"
+          echo "tag=WhiskFul-alpha-AD-$ver" >> "$GITHUB_OUTPUT"
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Generate Gradle wrapper
         run: |
@@ -107,12 +96,12 @@ jobs:
           RELEASE_APK=$(find app/build/outputs/apk -name "*-release-unsigned.apk" -o -name "*-release.apk" -type f | head -1 || true)
           mkdir -p "$GITHUB_WORKSPACE/artifacts"
           if [[ -n "$DEBUG_APK" ]]; then
-            cp "$DEBUG_APK" "$GITHUB_WORKSPACE/artifacts/wiskful-android-${{ steps.version.outputs.version }}-debug.apk"
-            echo "debug=$GITHUB_WORKSPACE/artifacts/wiskful-android-${{ steps.version.outputs.version }}-debug.apk" >> "$GITHUB_OUTPUT"
+            cp "$DEBUG_APK" "$GITHUB_WORKSPACE/artifacts/${{ steps.version.outputs.tag }}-debug.apk"
+            echo "debug=$GITHUB_WORKSPACE/artifacts/${{ steps.version.outputs.tag }}-debug.apk" >> "$GITHUB_OUTPUT"
           fi
           if [[ -n "$RELEASE_APK" ]]; then
-            cp "$RELEASE_APK" "$GITHUB_WORKSPACE/artifacts/wiskful-android-${{ steps.version.outputs.version }}-release.apk"
-            echo "release=$GITHUB_WORKSPACE/artifacts/wiskful-android-${{ steps.version.outputs.version }}-release.apk" >> "$GITHUB_OUTPUT"
+            cp "$RELEASE_APK" "$GITHUB_WORKSPACE/artifacts/${{ steps.version.outputs.tag }}-release.apk"
+            echo "release=$GITHUB_WORKSPACE/artifacts/${{ steps.version.outputs.tag }}-release.apk" >> "$GITHUB_OUTPUT"
           fi
           if [[ -z "$DEBUG_APK" && -z "$RELEASE_APK" ]]; then
             exit 1
@@ -128,7 +117,7 @@ jobs:
             NOTES=$(git log --oneline HEAD --since="2026-09-01" --pretty=format:"- %s (%h)" | head -50)
           fi
           if [[ -z "$NOTES" ]]; then
-            NOTES="New APK build for version ${{ steps.version.outputs.version }}"
+            NOTES="New APK build for version ${{ steps.version.outputs.tag }}"
           fi
           echo "$NOTES" > release_notes.md
           echo "release_notes<<EOF" >> "$GITHUB_OUTPUT"
@@ -139,7 +128,7 @@ jobs:
         uses: softprops/action-gh-release@v3
         with:
           tag_name: ${{ steps.version.outputs.tag }}
-          name: WhiskFul-${{ steps.version.outputs.version }}
+          name: WhiskFul-${{ steps.version.outputs.tag }}
           body_path: release_notes.md
           prerelease: true
           make_latest: true
@@ -153,7 +142,7 @@ jobs:
         if: steps.apk.outputs.debug != ''
         uses: actions/upload-artifact@v4
         with:
-          name: wiskful-apk-${{ steps.version.outputs.version }}-debug
+          name: ${{ steps.version.outputs.tag }}-debug
           path: ${{ steps.apk.outputs.debug }}
           retention-days: 90
 
@@ -161,7 +150,7 @@ jobs:
         if: steps.apk.outputs.release != ''
         uses: actions/upload-artifact@v4
         with:
-          name: wiskful-apk-${{ steps.version.outputs.version }}-release
+          name: ${{ steps.version.outputs.tag }}-release
           path: ${{ steps.apk.outputs.release }}
           retention-days: 90
 

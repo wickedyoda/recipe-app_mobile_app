@@ -28,18 +28,15 @@ jobs:
         id: version
         run: |
           set -e
-          latest=$(gh release list --repo ${{ github.repository }} --limit 100 --json tagName --jq '.[].tagName' | grep '^alpha-1\.0\.' | sort -V | tail -1)
-          if [[ "$latest" =~ ^alpha-1\.0\.([0-9]+)$ ]]; then
+          latest=$(gh release list --repo ${{ github.repository }} --limit 200 --json tagName --jq '.[].tagName' | grep '^WhiskFul-alpha-ios-1\.0\.' | sort -V | tail -1)
+          if [[ "$latest" =~ ^WhiskFul-alpha-ios-1\.0\.([0-9]+)$ ]]; then
             next=$(( 10#${BASH_REMATCH[1]} + 1 ))
           else
-            next=4
+            next=1
           fi
-          if [[ "$next" -lt 4 ]]; then
-            next=4
-          fi
-          ver="alpha-1.0.$(printf '%02d' "$next")"
+          ver="1.0.$(printf '%02d' "$next")"
           echo "version=$ver" >> "$GITHUB_OUTPUT"
-          echo "tag=$ver" >> "$GITHUB_OUTPUT"
+          echo "tag=WhiskFul-alpha-ios-$ver" >> "$GITHUB_OUTPUT"
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
@@ -53,6 +50,7 @@ jobs:
             -destination "generic/platform=iOS" \
             clean archive \
             CODE_SIGN_STYLE=Automatic \
+            IPHONEOS_DEPLOYMENT_TARGET=25.0 \
             -allowProvisioningUpdates
 
       - name: Export IPA
@@ -68,7 +66,7 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: wiskful-ios-ipa-${{ steps.version.outputs.version }}
+          name: ${{ steps.version.outputs.tag }}
           path: build/WhiskFul.ipa
           retention-days: 30
 

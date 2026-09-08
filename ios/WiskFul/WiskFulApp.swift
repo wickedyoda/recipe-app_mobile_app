@@ -2,7 +2,7 @@ import UIKit
 import SwiftUI
 
 @main
-struct WiskFulApp: App {
+struct WhiskFulApp: App {
     var body: some Scene {
         WindowGroup {
             ContentView()

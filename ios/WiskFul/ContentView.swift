@@ -20,7 +20,7 @@ struct ContentView: View {
                         )
                 } else {
                     VStack(spacing: 20) {
-                        Text("WiskFul")
+                        Text("WhiskFul")
                             .font(.largeTitle)
                             .fontWeight(.bold)
                             .foregroundColor(.white)
@@ -36,7 +36,7 @@ struct ContentView: View {
                     }
                     .padding()
                     .background(Color(red: 0x11/255, green: 0x11/255, blue: 0x11/255).ignoresSafeArea())
-                    .navigationTitle("WiskFul")
+                    .navigationTitle("WhiskFul")
                 }
             }
         }
@@ -76,7 +76,7 @@ struct VersionBadge: View {
     }
     
     var body: some View {
-        Text("WiskFul \(versionName)")
+        Text("WhiskFul \(versionName)")
             .font(.caption2)
             .foregroundColor(.white)
             .padding(.horizontal, 16)
@@ -123,7 +123,7 @@ struct HostPromptView: View {
                 .cornerRadius(12)
             }
             .padding()
-            .navigationTitle("WiskFul")
+            .navigationTitle("WhiskFul")
             .navigationBarTitleDisplayMode(.inline)
             .alert("Invalid URL", isPresented: $showAlert) {
                 Button("OK", role: .cancel) { }

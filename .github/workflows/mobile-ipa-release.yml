@@ -1,24 +1,47 @@
-name: "iOS IPA Release"
+name: iOS IPA Build & Release
 
 on:
+  push:
+    branches:
+      - main
   workflow_dispatch:
-    inputs:
-      version:
-        description: "Version number (e.g. 1.0.22)"
-        required: false
-        default: ""
+
+permissions:
+  contents: write
 
 jobs:
-  ios-build:
-    name: "Build iOS IPA"
+  build-ipa:
+    name: Build iOS IPA
     runs-on: macos-latest
     steps:
-      - uses: actions/checkout@v7
+      - name: Checkout repository
+        uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
 
       - name: Select Xcode
         uses: maxim-lobanov/setup-xcode@v2
         with:
           xcode-version: latest-stable
+
+      - name: Derive iOS version tag
+        id: version
+        run: |
+          set -e
+          latest=$(gh release list --repo ${{ github.repository }} --limit 100 --json tagName --jq '.[].tagName' | grep '^alpha-1\.0\.' | sort -V | tail -1)
+          if [[ "$latest" =~ ^alpha-1\.0\.([0-9]+)$ ]]; then
+            next=$(( 10#${BASH_REMATCH[1]} + 1 ))
+          else
+            next=4
+          fi
+          if [[ "$next" -lt 4 ]]; then
+            next=4
+          fi
+          ver="alpha-1.0.$(printf '%02d' "$next")"
+          echo "version=$ver" >> "$GITHUB_OUTPUT"
+          echo "tag=$ver" >> "$GITHUB_OUTPUT"
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Build and archive WhiskFul
         run: |
@@ -45,6 +68,36 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: wiskful-ios-ipa
+          name: wiskful-ios-ipa-${{ steps.version.outputs.version }}
           path: build/WhiskFul.ipa
           retention-days: 30
+
+      - name: Generate release notes from commits
+        id: release_notes
+        run: |
+          LAST_TAG=$(git describe --tags --match "alpha-1.0.*" 2>/dev/null | tail -1)
+          if [[ -n "$LAST_TAG" ]]; then
+            NOTES=$(git log --oneline "$LAST_TAG"..HEAD --pretty=format:"- %s (%h)" | head -50)
+          else
+            NOTES=$(git log --oneline HEAD --since="2026-09-01" --pretty=format:"- %s (%h)" | head -50)
+          fi
+          if [[ -z "$NOTES" ]]; then
+            NOTES="New IPA build for version ${{ steps.version.outputs.version }}"
+          fi
+          echo "$NOTES" > release_notes.md
+          echo "release_notes<<EOF" >> "$GITHUB_OUTPUT"
+          cat release_notes.md >> "$GITHUB_OUTPUT"
+          echo "EOF" >> "$GITHUB_OUTPUT"
+
+      - name: Create/Update GitHub Release
+        uses: softprops/action-gh-release@v3
+        with:
+          tag_name: ${{ steps.version.outputs.tag }}
+          name: WhiskFul-${{ steps.version.outputs.version }}
+          body_path: release_notes.md
+          prerelease: true
+          make_latest: true
+          files: |
+            build/WhiskFul.ipa
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

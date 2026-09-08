@@ -139,7 +139,7 @@ jobs:
         uses: softprops/action-gh-release@v2
         with:
           tag_name: ${{ steps.version.outputs.tag }}
-          name: WiskFul-${{ steps.version.outputs.version }}
+          name: WhiskFul-${{ steps.version.outputs.version }}
           body_path: release_notes.md
           prerelease: true
           make_latest: true
@@ -169,7 +169,7 @@ jobs:
         id: export_logs
         run: |
           mkdir -p /tmp/debug_logs
-          echo "=== WiskFul Debug Build Log ===" > /tmp/debug_logs/debug_build_log.txt
+          echo "=== WhiskFul Debug Build Log ===" > /tmp/debug_logs/debug_build_log.txt
           echo "Build: ${{ github.run_id }}" >> /tmp/debug_logs/debug_build_log.txt
           echo "Version: ${{ steps.version.outputs.version }}" >> /tmp/debug_logs/debug_build_log.txt
           echo "Time: $(date -u)" >> /tmp/debug_logs/debug_build_log.txt

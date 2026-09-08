@@ -2,7 +2,7 @@
 
 ## Build Configuration
 
-This document describes the Android build configuration for WiskFul.
+This document describes the Android build configuration for WhiskFul.
 
 ### Signing Configuration
 

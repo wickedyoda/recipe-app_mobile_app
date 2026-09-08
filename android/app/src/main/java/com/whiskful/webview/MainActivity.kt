@@ -27,7 +27,7 @@ import java.io.FileWriter
 
 private const val PREFS_NAME = "host_prefs"
 private const val KEY_HOST = "host_name"
-private const val TAG = "WiskFul"
+private const val TAG = "WhiskFul"
 
 class MainActivity : AppCompatActivity() {
     private lateinit var urlInput: EditText
@@ -184,7 +184,7 @@ class MainActivity : AppCompatActivity() {
         val px16 = (16 * resources.displayMetrics.density).toInt()
         val bgColor = android.graphics.Color.parseColor("#80000000") // semi-transparent black
         val badge = TextView(this).apply {
-            text = "WiskFul $versionName"
+            text = "WhiskFul $versionName"
             setTextColor(android.graphics.Color.parseColor("#ffffff"))
             setBackgroundColor(bgColor)
             setPadding(px16, 8, px16, 8)
@@ -218,7 +218,7 @@ class MainActivity : AppCompatActivity() {
                 putExtra(android.content.Intent.EXTRA_STREAM, uri)
                 addFlags(android.content.Intent.FLAG_GRANT_READ_URI_PERMISSION)
             }
-            startActivity(android.content.Intent.createChooser(intent, "Share WiskFul logs"))
+            startActivity(android.content.Intent.createChooser(intent, "Share WhiskFul logs"))
             AppLog.i("Shared log file=${logFile.absolutePath} size=${logFile.length()}")
         } catch (e: Exception) {
             Log.e(TAG, "Failed to share logs", e)

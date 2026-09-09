@@ -40,6 +40,13 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Sign in with Apple ID
+        uses: apple-actions/setup-apple-id@v1
+        with:
+          apple-id: ${{ secrets.APPLE_ID }}
+          apple-id-password: ${{ secrets.APPLE_ID_PASSWORD }}
+          team-id: ${{ secrets.DEVELOPMENT_TEAM }}
+
       - name: Build and archive WhiskFul
         run: |
           xcodebuild \

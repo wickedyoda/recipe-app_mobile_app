@@ -124,7 +124,7 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin XCBuildConfiguration section */
-		5001A2FA25272FCD0089A53B /* Debug */ = {
+		5001A30A25272FCD0089A53B /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
@@ -138,7 +138,7 @@
 			};
 			name = Debug;
 		};
-		5001A2FB25272FCD0089A53B /* Release */ = {
+		5001A30B25272FCD0089A53B /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
@@ -180,8 +180,8 @@
 		5001A2FA25272FCD0089A53B /* Build configuration list for WhiskFul */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				5001A2FA25272FCD0089A53B /* Debug */,
-				5001A2FB25272FCD0089A53B /* Release */,
+				5001A30A25272FCD0089A53B /* Debug */,
+				5001A30B25272FCD0089A53B /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

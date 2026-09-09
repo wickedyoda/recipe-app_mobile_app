@@ -44,10 +44,10 @@ jobs:
       - name: Verify workspace exists
         run: |
           ls -la ios/
-          ls -la ios/WiskFul/
-          ls -la ios/WiskFul/WhiskFul.xcworkspace/
-          ls -la ios/WiskFul/WhiskFul.xcodeproj/
-          cat ios/WiskFul/WhiskFul.xcworkspace/contents.xcworkspacedata
+          ls -la ios/WhiskFul.xcworkspace/
+          cat ios/WhiskFul.xcworkspace/contents.xcworkspacedata
+          test -f ios/exportOptions.plist
+          xmllint --noout ios/exportOptions.plist
 
       - name: Build and archive WhiskFul
         run: |

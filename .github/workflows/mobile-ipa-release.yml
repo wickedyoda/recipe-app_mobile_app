@@ -42,6 +42,7 @@ jobs:
 
       - name: Build and archive WhiskFul
         run: |
+          export DEVELOPMENT_TEAM="${{ secrets.DEVELOPMENT_TEAM }}"
           xcodebuild \
             -project ios/WiskFul/WhiskFul.xcodeproj \
             -scheme WhiskFul \
@@ -51,7 +52,7 @@ jobs:
             clean archive \
             CODE_SIGN_STYLE=Automatic \
             CODE_SIGN_IDENTITY="Apple Development" \
-            DEVELOPMENT_TEAM="${{ secrets.DEVELOPMENT_TEAM }}" \
+            DEVELOPMENT_TEAM="$DEVELOPMENT_TEAM" \
             IPHONEOS_DEPLOYMENT_TARGET=25.0 \
             -allowProvisioningUpdates
 

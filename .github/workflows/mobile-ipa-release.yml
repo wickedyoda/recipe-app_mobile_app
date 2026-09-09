@@ -43,7 +43,7 @@ jobs:
       - name: Build and archive WhiskFul
         run: |
           xcodebuild \
-            -workspace ios/WhiskFul.xcworkspace \
+            -project ios/WiskFul/WhiskFul.xcodeproj \
             -scheme WhiskFul \
             -configuration Release \
             -archivePath $PWD/build/WhiskFul.xcarchive \

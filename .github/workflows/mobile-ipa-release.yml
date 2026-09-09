@@ -40,12 +40,19 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Sign in with Apple ID
-        uses: apple-actions/setup-apple-id@v1
+      - name: Import signing certificate
+        uses: Apple-Actions/import-codesign-certs@v1
         with:
-          apple-id: ${{ secrets.APPLE_ID }}
-          apple-id-password: ${{ secrets.APPLE_ID_PASSWORD }}
-          team-id: ${{ secrets.DEVELOPMENT_TEAM }}
+          certificate-base64: ${{ secrets.SIGNING_CERTIFICATE }}
+          certificate-password: ${{ secrets.SIGNING_CERTIFICATE_PASSWORD }}
+
+      - name: Download provisioning profiles
+        uses: Apple-Actions/download-provisioning-profiles@v1
+        with:
+          bundle-id: com.wickedyoda.whiskful
+          api-key-id: ${{ secrets.APP_STORE_CONNECT_API_KEY_ID }}
+          api-issuer-id: ${{ secrets.APP_STORE_CONNECT_API_ISSUER_ID }}
+          api-private-key: ${{ secrets.APP_STORE_CONNECT_API_KEY_CONTENT }}
 
       - name: Build and archive WhiskFul
         run: |

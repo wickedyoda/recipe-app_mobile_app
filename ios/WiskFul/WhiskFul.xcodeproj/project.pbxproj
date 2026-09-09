@@ -185,6 +185,7 @@
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
+			name = Release;
 		};
 		5001A2FB25272FCD0089A53B /* Build configuration list for PBXProject */ = {
 			isa = XCConfigurationList;
@@ -194,6 +195,7 @@
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
+			name = Release;
 		};
 /* End XCConfigurationList section */
 

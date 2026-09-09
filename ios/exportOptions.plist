@@ -11,6 +11,6 @@
     <key>compileBitcode</key>
     <false/>
     <key>thinning</key>
-    <string><thinning></string>
+    <string>none</string>
 </dict>
 </plist>

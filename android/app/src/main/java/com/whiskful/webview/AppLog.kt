@@ -11,7 +11,7 @@ import java.util.Locale
 
 object AppLog {
     private const val TAG = "WhiskFul"
-    private const val LOG_FILE = "wiskful-app.log"
+    private const val LOG_FILE = "whiskful-app.log"
     private const val MAX_LOG_SIZE = 10 * 1024 * 1024 // 10 MB
     private val dateFormat = SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS", Locale.US)
 

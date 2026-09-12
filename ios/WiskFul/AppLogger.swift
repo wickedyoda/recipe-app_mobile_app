@@ -3,7 +3,7 @@ import Foundation
 class AppLogger {
     static let shared = AppLogger()
     private let tag = "WhiskFul"
-    private let logFileName = "wiskful-app.log"
+    private let logFileName = "whiskful-app.log"
     private let maxLogSize: UInt64 = 10 * 1024 * 1024 // 10 MB
     private var logFileURL: URL?
     

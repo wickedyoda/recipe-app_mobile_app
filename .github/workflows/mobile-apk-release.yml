@@ -56,8 +56,8 @@ jobs:
         run: |
           if [[ -n "${{ secrets.APK_SIGNING_KEY }}" ]]; then
             mkdir -p /tmp/keystore
-            printf '%s' "${{ secrets.APK_SIGNING_KEY }}" | base64 -d > /tmp/keystore/wiskful-release.keystore
-            echo "store_file=/tmp/keystore/wiskful-release.keystore" >> "$GITHUB_ENV"
+            printf '%s' "${{ secrets.APK_SIGNING_KEY }}" | base64 -d > /tmp/keystore/whiskful-release.keystore
+            echo "store_file=/tmp/keystore/whiskful-release.keystore" >> "$GITHUB_ENV"
           else
             echo "APK_SIGNING_KEY secret not set; release APK will be unsigned"
           fi
@@ -171,6 +171,6 @@ jobs:
         if: steps.export_logs.outputs.log_file != ''
         uses: actions/upload-artifact@v4
         with:
-          name: wiskful-debug-logs-${{ steps.version.outputs.version }}
+          name: whiskful-debug-logs-${{ steps.version.outputs.version }}
           path: /tmp/debug_logs/debug_build_log.txt
           retention-days: 90
